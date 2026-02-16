@@ -1,5 +1,5 @@
 #### imports ####
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, flash
 from database.database import add_new_swimmer,                                                              check_existing_swimmer
 
 
@@ -102,14 +102,14 @@ def createAccount():
         if message == "":
             successful_add = add_new_swimmer(rankings_ID, name, email, password)
             if successful_add:
-                message = f"Account created successfully for {name} with Swim England ID {rankings_ID}"
-                return message
+                return render_template("dashboard.html")
             else:
                 return "Sign-up failed - please try again"
             
         else:
-            return message
-
+            flash(message)
+            return render_template("createAccount.html")
+        
     # or if method is not POST, assuming first-time form visit - load login form
     else:
         return render_template("createAccount.html")

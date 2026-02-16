@@ -7,6 +7,7 @@ from database.database import createTables
 
 # Create flask application
 app = Flask(__name__)
+app.secret_key = "supersecretkey"  # Required for flashing messages to the user
 
 # Register blueprints
 app.register_blueprint(userManagement_bp)                        
