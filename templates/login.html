@@ -9,6 +9,21 @@
 
 <body>
 
+    
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <hr>
+    {% endif %}
+{% endwith %}
+
+
+
+
+
 <div>
     <h1><i> 'App Name' </i></h1>
 </div>
@@ -20,12 +35,9 @@
 <div>
     <form action="/login" method="POST">
          <div>
-            <label for="SE_ID"> Swim England ID: </label>
-            <input name="SE_ID" id="SE_ID" type="number" required min="100" and max="9999999999"/>
+            <label for="rankings_ID"> Swim England ID: </label>
+            <input name="rankings_ID" id="rankings_ID" type="number" required min="100" and max="9999999999"/>
             <p> Don't know your Swim England ID? <a href="https://www.swimming.org/swimengland/club-member-check/">Find out here</a></p>
-        <div>
-            <label for="email">Email: </label>
-            <input name="email" id="email" type="email"/>
         </div>
 
         <div>

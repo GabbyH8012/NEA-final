@@ -9,6 +9,7 @@ from database.database import createTables
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for flashing messages to the user
 
+
 # Register blueprints
 app.register_blueprint(userManagement_bp)                        
 
@@ -27,3 +28,4 @@ def landing():
 # Launch the application
 if __name__ == '__main__':
     app.run(debug=True)
+

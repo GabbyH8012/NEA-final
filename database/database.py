@@ -83,18 +83,19 @@ def createTables():
 
 # Database access function to check if there is already a swimmer with the same SE_ID
 # -----------------------------------------------------------------------------------
-def check_existing_swimmer(SE_ID: int) -> bool:
+def check_existing_swimmer(rankings_ID: int) -> bool:
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         cursor.execute("""SELECT * 
                         FROM user 
-                        WHERE rankings_ID = ? """ , (str(SE_ID),))
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
         result = cursor.fetchone()
 
         if result == None:
             return False
         else:
             return True
+
 
 
 # Database access function to add a new swimmer to the database with the imputted details
@@ -105,5 +106,24 @@ def add_new_swimmer(rankings_ID: int, name: str, email: str, password: str) -> b
         cursor.execute("INSERT INTO user (rankings_ID, email, password, name) VALUES (?, ?, ?, ?)", (str(rankings_ID), email, password, name))
         conn.commit()
         return True
+    
+
+
+# Database access function to check if login credentials are correct
+# ------------------------------------------------------------------
+def check_login_credentials(rankings_ID: int, password: str) -> bool:
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT password 
+                        FROM user 
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
+        result = cursor.fetchone()
+
+        if result == None:
+            return False
+        elif result[0] == password:
+            return True
+        else:
+            return False
     
 

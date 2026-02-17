@@ -1,6 +1,6 @@
 #### imports ####
 from flask import Blueprint, request, render_template, flash
-from database.database import add_new_swimmer,                                                              check_existing_swimmer
+from database.database import add_new_swimmer, check_existing_swimmer, check_login_credentials
 
 
 # Create Blueprint for User account creation and login
@@ -15,17 +15,23 @@ def login():
     if request.method == 'POST':
         
         # Read data from the form if method is POST - data is submitted
-        se_id = request.form.get('SE_ID')
-        email = request.form.get('email')
-        password = request.form.get('password')
+        rankings_ID = int(request.form.get('rankings_ID'))
+        email = str(request.form.get('email'))
+        password = str(request.form.get('password'))
 
-        # Reject blank input
-        if se_id.strip() == '' or email.strip() == '' or password.strip() == '':   
-            return "Complete all required fields"
+        # Reject blank inputs
+        if str(rankings_ID).strip() == "" or email.strip() == "" or password.strip() == "": 
+            flash("Please complete all required fields")  
+            return False
         
-        else:
-            # Valid input - check login credentials
-            return f"Checking credentials for Swim England ID {se_id}"
+        # Valid input - check login credentials
+        # If credentials are incorrect, flash error message - if correct, redierct to home page
+        elif check_login_credentials(rankings_ID, password) == False:
+            flash("Swim England ID or password is incorrect - please try again")
+            return render_template("login.html")
+
+        elif check_login_credentials(rankings_ID, password) == True:
+            return render_template("home.html")
 
     # or assuming first-time form visit - load login form
     else:
@@ -40,7 +46,7 @@ def createAccount():
     if request.method == 'POST':
 
         # Read data from the form if method is POST - data is submitted
-        rankings_ID = int(request.form.get('SE_ID'))
+        rankings_ID = int(request.form.get('rankings_ID'))
         name = str(request.form.get('name'))
         email = str(request.form.get('email'))
         password = str(request.form.get('password'))
@@ -53,7 +59,7 @@ def createAccount():
 
 
         #checks for blank rankings_ID
-        if rankings_ID == "":
+        if str(rankings_ID).strip() == "":
             message = message + "Please enter your Swim England ID"
 
         #checks for invalid rankings_ID length
@@ -61,7 +67,7 @@ def createAccount():
             message = message + "Invalid ID - Please try again"
 
         #checks for blank email
-        elif email == "":
+        elif email.strip() == "":
             message = message + "Please enter an email address"
 
         #checks for invalid email length
@@ -69,7 +75,7 @@ def createAccount():
             message = message + "Username is too short - must be at least 5 characters"
 
         #checks for blank password
-        elif password == "":
+        elif password.strip() == "":
             message = message + "Please create a password"
 
         #checks for invalid password length
@@ -94,8 +100,11 @@ def createAccount():
             message = message + "Password must include a special character (e.g. !, @, #, $, &, *, %, etc.)"
 
         #checks for blank name
-        elif name == "":
+        elif name.strip() == "":
             message = message + "Please enter your name"
+
+        elif check_existing_swimmer(rankings_ID):
+            message = message + "An account with this Swim England ID already exists"
         
         #checks that no errors have been added to the message and if not
         #adds new swimmer to database by calling add_new_swimmer function
@@ -104,7 +113,8 @@ def createAccount():
             if successful_add:
                 return render_template("home.html")
             else:
-                return "Sign-up failed - please try again"
+                flash("Sign-up failed - please try again")
+                return render_template("createAccount.html")
             
         else:
             flash(message)
