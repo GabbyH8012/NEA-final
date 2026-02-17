@@ -10,6 +10,17 @@
 <body>
 
 
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <hr>
+    {% endif %}
+{% endwith %}
+
+
+
 <div>
     <h1><i> 'App Name' </i></h1>
 </div>
@@ -57,13 +68,7 @@
 <p> Already have an account? <a href="/login">Sign in</a></p>
 
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+
 
 
 </body>

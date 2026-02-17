@@ -18,9 +18,9 @@ if isfile("database/swimmer_info.db") == False:
     createTables()  
 
 
-# Handle default "/" home page route
+# Handle default "/" landing page route
 @app.route('/')
-def home():   
+def landing():   
     return redirect("/login")
 
 

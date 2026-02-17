@@ -106,3 +106,4 @@ def add_new_swimmer(rankings_ID: int, name: str, email: str, password: str) -> b
         conn.commit()
         return True
     
+

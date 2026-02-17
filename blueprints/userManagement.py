@@ -102,7 +102,7 @@ def createAccount():
         if message == "":
             successful_add = add_new_swimmer(rankings_ID, name, email, password)
             if successful_add:
-                return render_template("dashboard.html")
+                return render_template("home.html")
             else:
                 return "Sign-up failed - please try again"
             
