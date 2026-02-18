@@ -1,6 +1,7 @@
 #### imports ####
-from flask import Blueprint, request, render_template, flash
+from flask import Blueprint, request, render_template, flash   
 from database.database import add_new_swimmer, check_existing_swimmer, check_login_credentials
+from markupsafe import Markup
 
 
 # Create Blueprint for User account creation and login
@@ -63,48 +64,78 @@ def createAccount():
             message = message + "Please enter your Swim England ID"
 
         #checks for invalid rankings_ID length
-        elif len(str(rankings_ID)) >= 11 or len(str(rankings_ID)) <= 3:
-            message = message + "Invalid ID - Please try again"
+        if len(str(rankings_ID)) >= 11 or len(str(rankings_ID)) <= 3:
+            if message == "":
+                message = message + "Invalid ID - Please try again"
+            else:
+                message = message + Markup("<br>Invalid ID - Please try again")
 
         #checks for blank email
-        elif email.strip() == "":
-            message = message + "Please enter an email address"
-
-        #checks for invalid email length
-        elif len(email) <= 4:
-            message = message + "Username is too short - must be at least 5 characters"
+        if email.strip() == "":
+            if message == "":
+                message = message + "Please enter an email address"
+            else:
+                message = message + Markup("<br>Please enter an email address")
 
         #checks for blank password
-        elif password.strip() == "":
-            message = message + "Please create a password"
+        if password.strip() == "":
+            if message == "":
+                message = message + "Please create a password"
+            else:
+                message = message + Markup("<br>Please create a password")
 
         #checks for invalid password length
-        elif len(password) <= 8:
-            message = message + "Password is too short - must be at least 9 characters long"
+        if len(password) <= 8:
+            if message == "":
+                message = message + "Password is too short - must be at least 9 characters long"
+            else:
+                message = message + Markup("<br>Password is too short - must be at least 9 characters long")
 
         #checks that password includes a number
-        elif not any(char.isdigit() for char in password):
-            message = message + "Password must include a number"
+        if not any(char.isdigit() for char in password):
+            if message == "":
+                message = message + "Password must include a number"
+            else:
+                message = message + Markup("<br>Password must include a number")
 
         #checks that password includes an uppercase and lowercase letter
-        elif not any(char.isupper() for char in password):
-            message = message + "Password must include an uppercase letter"
-        elif not any(char.islower() for char in password):
-            message = message + "Password must include a lowercase letter" 
+        if not any(char.isupper() for char in password):
+            if message == "":
+                message = message + "Password must include an uppercase letter"
+            else:
+                message = message + Markup("<br>Password must include an uppercase letter")
 
-        elif password != repassword:
-            message = message + "Passwords do not match - please try again"
+        if not any(char.islower() for char in password):
+            if message == "":
+                message = message + "Password must include a lowercase letter"
+            else:
+                message = message + Markup("<br>Password must include a lowercase letter") 
+
+        if password != repassword:
+            if message == "":
+                message = message + "Passwords do not match - please try again"
+            else:
+                message = message + Markup("<br>Passwords do not match - please try again")
 
         #checks that password includes a special character
-        elif password.isalnum():
-            message = message + "Password must include a special character (e.g. !, @, #, $, &, *, %, etc.)"
+        if password.isalnum():
+            if message == "":
+                message = message + "Password must include a special character (e.g. !, @, #, $, &, *, %, etc.)"
+            else:
+                message = message + Markup("<br>Password must include a special character (e.g. !, @, #, $, &, *, %, etc.)")
 
         #checks for blank name
-        elif name.strip() == "":
-            message = message + "Please enter your name"
+        if name.strip() == "":
+            if message == "":
+                message = message + "Please enter your name"
+            else:
+                message = message + Markup("<br>Please enter your name")
 
-        elif check_existing_swimmer(rankings_ID):
-            message = message + "An account with this Swim England ID already exists"
+        if check_existing_swimmer(rankings_ID):
+            if message == "":
+                message = message + "An account with this Swim England ID already exists"
+            else:
+                message = message + Markup("<br>An account with this Swim England ID already exists")
         
         #checks that no errors have been added to the message and if not
         #adds new swimmer to database by calling add_new_swimmer function

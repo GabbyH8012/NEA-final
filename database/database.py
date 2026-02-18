@@ -16,7 +16,8 @@ def createTables():
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
             name TEXT NOT NULL,
-            CHECK (length(rankings_ID) < 11 AND length(rankings_ID) > 3)
+            CHECK (length(rankings_ID) < 11 AND length(rankings_ID) > 3),    
+            CHECK (password GLOB '*[0-9]*' AND password GLOB '*[A-Z]*' AND password GLOB '*[a-z]*')
                 );
         """)
 
