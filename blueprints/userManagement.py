@@ -1,11 +1,17 @@
 #### imports ####
 from flask import Blueprint, request, render_template, flash   
-from database.database import add_new_swimmer, check_existing_swimmer, check_login_credentials
-from markupsafe import Markup
+from database.database import add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account
+from markupsafe import Markup 
 
 
 # Create Blueprint for User account creation and login
 userManagement_bp = Blueprint("userManagement", __name__, template_folder='../templates')
+
+#global vaiables
+currentSwimmer_ID = None
+currentSwimmer_name = None
+currentSwimmer_email = None
+
 
 
 # user login handler
@@ -17,21 +23,27 @@ def login():
         
         # Read data from the form if method is POST - data is submitted
         rankings_ID = int(request.form.get('rankings_ID'))
-        email = str(request.form.get('email'))
         password = str(request.form.get('password'))
 
         # Reject blank inputs
-        if str(rankings_ID).strip() == "" or email.strip() == "" or password.strip() == "": 
+        if str(rankings_ID).strip() == "" or password.strip() == "": 
             flash("Please complete all required fields")  
             return False
         
-        # Valid input - check login credentials
+        # Checking login credentials
         # If credentials are incorrect, flash error message - if correct, redierct to home page
         elif check_login_credentials(rankings_ID, password) == False:
             flash("Swim England ID or password is incorrect - please try again")
             return render_template("login.html")
 
         elif check_login_credentials(rankings_ID, password) == True:
+
+            get_user_info(rankings_ID)
+            global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+            currentSwimmer_ID = rankings_ID
+            currentSwimmer_name = get_user_info(rankings_ID)[0]
+            currentSwimmer_email = get_user_info(rankings_ID)[1]
+
             return render_template("home.html")
 
     # or assuming first-time form visit - load login form
@@ -131,17 +143,21 @@ def createAccount():
             else:
                 message = message + Markup("<br>Please enter your name")
 
-        if check_existing_swimmer(rankings_ID):
+        if check_existing_swimmer(rankings_ID, email):
             if message == "":
-                message = message + "An account with this Swim England ID already exists"
+                message = message + "An account with this Swim England ID or email address already exists"
             else:
-                message = message + Markup("<br>An account with this Swim England ID already exists")
+                message = message + Markup("<br>An account with this Swim England ID or email address already exists")
         
         #checks that no errors have been added to the message and if not
         #adds new swimmer to database by calling add_new_swimmer function
         if message == "":
             successful_add = add_new_swimmer(rankings_ID, name, email, password)
             if successful_add:
+                global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+                currentSwimmer_ID = rankings_ID
+                currentSwimmer_name = name
+                currentSwimmer_email = email
                 return render_template("home.html")
             else:
                 flash("Sign-up failed - please try again")
@@ -154,3 +170,26 @@ def createAccount():
     # or if method is not POST, assuming first-time form visit - load login form
     else:
         return render_template("createAccount.html")
+    
+
+# log out handler
+# ---------------
+@userManagement_bp.route("/logout", methods=['GET', 'POST'])
+def logout():   
+    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+    currentSwimmer_ID = None
+    currentSwimmer_name = None
+    currentSwimmer_email = None
+    return render_template("login.html")
+
+
+# delete account handler
+# ----------------------
+@userManagement_bp.route("/deleteAccount", methods=['GET', 'POST'])
+def deleteAccount():
+    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+    delete_account(currentSwimmer_ID)
+    currentSwimmer_ID = None
+    currentSwimmer_name = None
+    currentSwimmer_email = None
+    return render_template("login.html")

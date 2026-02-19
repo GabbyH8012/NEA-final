@@ -3,6 +3,8 @@ from genericpath import isfile
 from flask import Flask, redirect
 from blueprints.userManagement import userManagement_bp
 from database.database import createTables
+from blueprints.userManagement import currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+
               
 
 # Create flask application
@@ -29,3 +31,4 @@ def landing():
 if __name__ == '__main__':
     app.run(debug=True)
 
+print(currentSwimmer_ID)

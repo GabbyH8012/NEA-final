@@ -1,4 +1,5 @@
 import sqlite3
+from unittest import result
 
 db_name = "database/swimmer_info.db"
 
@@ -82,9 +83,9 @@ def createTables():
 
 
 
-# Database access function to check if there is already a swimmer with the same SE_ID
+# Database access function to check if there is already a swimmer with the same rankings_ID or email
 # -----------------------------------------------------------------------------------
-def check_existing_swimmer(rankings_ID: int) -> bool:
+def check_existing_swimmer(rankings_ID: int , email: str) -> bool:
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         cursor.execute("""SELECT * 
@@ -92,7 +93,12 @@ def check_existing_swimmer(rankings_ID: int) -> bool:
                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
         result = cursor.fetchone()
 
-        if result == None:
+        cursor.execute("""SELECT * 
+                        FROM user 
+                        WHERE email = ? """ , (email,))
+        result2 = cursor.fetchone()
+
+        if result == None and result2 == None:
             return False
         else:
             return True
@@ -128,3 +134,24 @@ def check_login_credentials(rankings_ID: int, password: str) -> bool:
             return False
     
 
+# Database access function to return current user's and name and email address
+# ----------------------------------------------------------------------------
+def get_user_info(rankings_ID: int):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT name, email 
+                        FROM user 
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
+        result = cursor.fetchone()
+
+        return result
+    
+
+# Database access function to delete an account from the database
+# ---------------------------------------------------------------
+def delete_account(rankings_ID: int):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""DELETE FROM user 
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
+        return True
