@@ -1,23 +1,22 @@
 #### imports ####
 from flask import Blueprint, request, render_template, flash   
-from database.database import add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account
+from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account
 from markupsafe import Markup 
+from dataScraping import fetch_data_login
+
 
 
 # Create Blueprint for User account creation and login
 userManagement_bp = Blueprint("userManagement", __name__, template_folder='../templates')
-
-#global vaiables
-currentSwimmer_ID = None
-currentSwimmer_name = None
-currentSwimmer_email = None
-
 
 
 # user login handler
 # ------------------
 @userManagement_bp.route("/login", methods=['GET', 'POST'])
 def login():   
+
+    # Access global variables
+    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
 
     if request.method == 'POST':
         
@@ -37,12 +36,19 @@ def login():
             return render_template("login.html")
 
         elif check_login_credentials(rankings_ID, password) == True:
-
-            get_user_info(rankings_ID)
-            global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+            
             currentSwimmer_ID = rankings_ID
             currentSwimmer_name = get_user_info(rankings_ID)[0]
             currentSwimmer_email = get_user_info(rankings_ID)[1]
+
+
+            #fetching data from the rankings website and pushing it to the database
+            scrapedData = fetch_data_login(currentSwimmer_ID)
+            for race_ID in range(1,36):
+                for stroke in scrapedData:
+                    for swim in stroke:
+                        push_extracted_data(currentSwimmer_ID, race_ID, swim[0], swim[1], swim[2], swim[3])
+
 
             return render_template("home.html")
 
@@ -193,3 +199,4 @@ def deleteAccount():
     currentSwimmer_name = None
     currentSwimmer_email = None
     return render_template("login.html")
+

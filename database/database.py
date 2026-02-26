@@ -71,8 +71,8 @@ def createTables():
             race_ID INTEGER NOT NULL,
             comp_name TEXT NOT NULL,
             date DATE NOT NULL,
-            entry_time TIME,
             final_time TIME,
+            goal_time TIME,
             PRIMARY KEY (rankings_ID , race_ID , comp_name , date),
             FOREIGN KEY (rankings_ID) REFERENCES user(rankings_ID),
             FOREIGN KEY (race_ID) REFERENCES race(race_ID),
@@ -134,6 +134,7 @@ def check_login_credentials(rankings_ID: int, password: str) -> bool:
             return False
     
 
+
 # Database access function to return current user's and name and email address
 # ----------------------------------------------------------------------------
 def get_user_info(rankings_ID: int):
@@ -147,6 +148,7 @@ def get_user_info(rankings_ID: int):
         return result
     
 
+
 # Database access function to delete an account from the database
 # ---------------------------------------------------------------
 def delete_account(rankings_ID: int):
@@ -155,3 +157,90 @@ def delete_account(rankings_ID: int):
         cursor.execute("""DELETE FROM user 
                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
         return True
+    
+
+
+# Database access function to populate the race table
+# ---------------------------------------------------
+def populate_race_table():
+
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        race_list = [
+            ("1", 50, "Freestyle", "Short"),
+            ("2", 100, "Freestyle", "Short"),
+            ("3", 200, "Freestyle", "Short"),
+            ("4", 400, "Freestyle", "Short"),
+            ("5", 800, "Freestyle", "Short"),
+            ("6", 1500, "Freestyle", "Short"),
+            ("7", 50, "Breaststroke", "Short"),
+            ("8", 100, "Breaststroke", "Short"),
+            ("9", 200, "Breaststroke", "Short"),
+            ("10", 50, "Butterfly", "Short"),
+            ("11", 100, "Butterfly", "Short"),
+            ("12", 200, "Butterfly", "Short"),
+            ("13", 50, "Backstroke", "Short"),
+            ("14", 100, "Backstroke", "Short"),
+            ("15", 200, "Backstroke", "Short"),
+            ("16", 200, "Individual Medley", "Short"),
+            ("17", 400, "Individual Medley", "Short"),
+            ("18", 100, "Individual Medley", "Short"),
+
+            ("19", 50, "Freestyle", "Long"),
+            ("20", 100, "Freestyle", "Long"),
+            ("21", 200, "Freestyle", "Long"),
+            ("22", 400, "Freestyle", "Long"),
+            ("23", 800, "Freestyle", "Long"),
+            ("24", 1500, "Freestyle", "Long"),
+            ("25", 50, "Breaststroke", "Long"),
+            ("26", 100, "Breaststroke", "Long"),
+            ("27", 200, "Breaststroke", "Long"),
+            ("28", 50, "Butterfly", "Long"),
+            ("29", 100, "Butterfly", "Long"),
+            ("30", 200, "Butterfly", "Long"),
+            ("31", 50, "Backstroke", "Long"),
+            ("32", 100, "Backstroke", "Long"),
+            ("33", 200, "Backstroke", "Long"),
+            ("34", 200, "Individual Medley", "Long"),
+            ("35", 400, "Individual Medley", "Long")
+        ]
+
+
+        cursor.executemany("INSERT INTO race (race_ID, distance, stroke, course) VALUES (?, ?, ?, ?)", race_list)
+
+    return True
+
+
+
+# Database access function to find the name of a race given the race_ID
+# ---------------------------------------------------------------------
+def find_race_from_ID(race_ID: int):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT distance, stroke
+                        FROM race
+                        WHERE race_ID = ? """ , (str(race_ID),))
+        result = cursor.fetchone()
+        result = str(result[0]) + " " + str(result[1])
+        return result
+    
+
+
+# Database access function to enter extracted data into the database
+# ------------------------------------------------------------------
+def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: str, final_time: str, venue: str):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        
+        print(comp_name, "+" , venue)
+        cursor.execute("INSERT INTO competition (comp_name, venue) VALUES (?, ?)", (comp_name, venue))
+        cursor.execute("INSERT INTO meet (comp_name, date) VALUES (?, ?)", (comp_name, date))
+        cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (rankings_ID, race_ID, comp_name, date, final_time))
+
+
+    return True
+
+
+# createTables()
+# populate_race_table()

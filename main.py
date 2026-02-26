@@ -3,9 +3,11 @@ from genericpath import isfile
 from flask import Flask, redirect
 from blueprints.userManagement import userManagement_bp
 from database.database import createTables
-from blueprints.userManagement import currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
 
-              
+# Define global vaiables
+currentSwimmer_ID = 0
+currentSwimmer_name = ""
+currentSwimmer_email = ""         
 
 # Create flask application
 app = Flask(__name__)
