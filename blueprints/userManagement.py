@@ -44,10 +44,10 @@ def login():
 
             #fetching data from the rankings website and pushing it to the database
             scrapedData = fetch_data_login(currentSwimmer_ID)
-            for race_ID in range(1,36):
-                for stroke in scrapedData:
-                    for swim in stroke:
-                        push_extracted_data(currentSwimmer_ID, race_ID, swim[0], swim[1], swim[2], swim[3])
+            #for race_ID in range(1,36):
+            for stroke in scrapedData:
+                for swim in stroke:
+                        push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
 
 
             return render_template("home.html")
