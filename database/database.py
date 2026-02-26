@@ -213,17 +213,17 @@ def populate_race_table():
 
 
 
-# Database access function to find the name of a race given the race_ID
-# ---------------------------------------------------------------------
-def find_race_from_ID(race_ID: int):
-    with sqlite3.connect(db_name) as conn:
-        cursor = conn.cursor()
-        cursor.execute("""SELECT distance, stroke
-                        FROM race
-                        WHERE race_ID = ? """ , (str(race_ID),))
-        result = cursor.fetchone()
-        result = str(result[0]) + " " + str(result[1])
-        return result
+# # Database access function to find the name of a race given the race_ID
+# # ---------------------------------------------------------------------
+# def find_race_from_ID(race_ID: int):
+#     with sqlite3.connect(db_name) as conn:
+#         cursor = conn.cursor()
+#         cursor.execute("""SELECT distance, stroke
+#                         FROM race
+#                         WHERE race_ID = ? """ , (str(race_ID),))
+#         result = cursor.fetchone()
+#         result = str(result[0]) + " " + str(result[1])
+#         return result
     
 
 
@@ -233,10 +233,29 @@ def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: st
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         
-        print(comp_name, "+" , venue)
-        cursor.execute("INSERT INTO competition (comp_name, venue) VALUES (?, ?)", (comp_name, venue))
-        cursor.execute("INSERT INTO meet (comp_name, date) VALUES (?, ?)", (comp_name, date))
-        cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (rankings_ID, race_ID, comp_name, date, final_time))
+
+        cursor.execute("""SELECT *
+                        FROM competition
+                        WHERE comp_name = ? """ , (comp_name,))
+        result = cursor.fetchone()
+        if result == None:
+            cursor.execute("INSERT INTO competition (comp_name, venue) VALUES (?, ?)", (comp_name, venue))
+
+
+        cursor.execute("""SELECT *
+                        FROM meet
+                        WHERE comp_name = ? AND date = ? """ , (comp_name, date))
+        result2 = cursor.fetchone()
+        if result2 == None:
+            cursor.execute("INSERT INTO meet (comp_name, date) VALUES (?, ?)", (comp_name, date))
+
+
+        cursor.execute("""SELECT *
+                        FROM result
+                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? """ , (str(rankings_ID), str(race_ID), comp_name, date))
+        result3 = cursor.fetchone()
+        if result3 == None:
+            cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (rankings_ID, race_ID, comp_name, date, final_time))
 
 
     return True

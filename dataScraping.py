@@ -1,7 +1,7 @@
 #### imports ####
 from bs4 import BeautifulSoup
 import httpx
-from database.database import find_race_from_ID
+# from database.database import find_race_from_ID
 
 
 
@@ -20,7 +20,7 @@ def find_url(race, course, currentSwimmer_ID):
 
 # Function to scrape data from the calculated url
 # -----------------------------------------------
-def extract_data(race_ID, course, race, currentSwimmer_ID):
+def extract_data(race_ID, course, currentSwimmer_ID):
     url = find_url(race_ID, course, currentSwimmer_ID)
     response = httpx.get(url)
     response_html = response.text
@@ -80,9 +80,9 @@ def fetch_data_login(currentSwimmer_ID):
 
         for race_ID in range(1,19):
             course = "S"
-            race_name = find_race_from_ID(race_ID) 
+            # race_name = find_race_from_ID(race_ID) 
 
-            result_short = extract_data(race_ID, course, race_name, currentSwimmer_ID)
+            result_short = extract_data(race_ID, course, currentSwimmer_ID)
 
             if result_short != []:         
                 all_data.append(result_short)
@@ -90,9 +90,9 @@ def fetch_data_login(currentSwimmer_ID):
 
         for race_ID in range(19,36):
             course = "L"
-            race_name = find_race_from_ID(race_ID)
+            # race_name = find_race_from_ID(race_ID)
 
-            result_long = extract_data((race_ID - 18), course, race_name, currentSwimmer_ID)
+            result_long = extract_data((race_ID - 18), course, currentSwimmer_ID)
             if result_long != []:
                 all_data.append(result_long)
 
