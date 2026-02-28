@@ -80,7 +80,6 @@ def fetch_data_login(currentSwimmer_ID):
 
         for race_ID in range(1,19):
             course = "S"
-            # race_name = find_race_from_ID(race_ID) 
 
             result_short = extract_data(race_ID, course, currentSwimmer_ID, race_ID)
 
@@ -90,7 +89,6 @@ def fetch_data_login(currentSwimmer_ID):
 
         for race_ID in range(19,36):
             course = "L"
-            # race_name = find_race_from_ID(race_ID)
 
             result_long = extract_data((race_ID - 18), course, currentSwimmer_ID, race_ID)
             if result_long != []:

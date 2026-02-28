@@ -44,7 +44,6 @@ def login():
 
             #fetching data from the rankings website and pushing it to the database
             scrapedData = fetch_data_login(currentSwimmer_ID)
-            #for race_ID in range(1,36):
             for stroke in scrapedData:
                 for swim in stroke:
                         push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
@@ -164,6 +163,15 @@ def createAccount():
                 currentSwimmer_ID = rankings_ID
                 currentSwimmer_name = name
                 currentSwimmer_email = email
+
+
+                #fetching data from the rankings website and pushing it to the database
+                scrapedData = fetch_data_login(currentSwimmer_ID)
+                for stroke in scrapedData:
+                    for swim in stroke:
+                        push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
+
+
                 return render_template("home.html")
             else:
                 flash("Sign-up failed - please try again")
@@ -199,4 +207,22 @@ def deleteAccount():
     currentSwimmer_name = None
     currentSwimmer_email = None
     return render_template("login.html")
+
+
+# refresh data collection handler
+# -------------------------------
+@userManagement_bp.route("/refreshData", methods=['GET', 'POST'])
+def refreshData():
+
+    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
+
+    #data scraping from the rankings website and pushing it to the database if it does not already exist
+    scrapedData = fetch_data_login(currentSwimmer_ID)
+    for stroke in scrapedData:
+        for swim in stroke:
+                push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
+
+    flash("Data refresh complete")
+
+    return render_template("home.html")
 

@@ -1,5 +1,4 @@
 import sqlite3
-from unittest import result
 
 db_name = "database/swimmer_info.db"
 
@@ -156,6 +155,16 @@ def delete_account(rankings_ID: int):
         cursor = conn.cursor()
         cursor.execute("""DELETE FROM user 
                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
+        
+        
+        cursor.execute("""DELETE FROM result 
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
+
+
+        cursor.execute("""DELETE FROM goal 
+                        WHERE rankings_ID = ? """ , (str(rankings_ID),))
+        
+
         return True
     
 

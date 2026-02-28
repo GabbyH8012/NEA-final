@@ -6,12 +6,28 @@
     <title>'Project Name' - Home</title>
 </head>
 <body>
+
+    
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        <hr>
+    {% endif %}
+{% endwith %}
+
+
+
+
     <h1>Home</h1>
 
     <form>
 
         <input type="submit" value="Log out" formaction="/logout" formmethod="POST"/>
         <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST"/>
+        <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST"/>
 
     </form>
 
