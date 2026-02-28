@@ -4,6 +4,7 @@ from flask import Flask, redirect
 from blueprints.userManagement import userManagement_bp
 from database.database import createTables
 
+
 # Define global vaiables
 currentSwimmer_ID = 0
 currentSwimmer_name = ""
@@ -33,4 +34,5 @@ def landing():
 if __name__ == '__main__':
     app.run(debug=True)
 
-print(currentSwimmer_ID)
+
+

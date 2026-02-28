@@ -222,17 +222,17 @@ def populate_race_table():
 
 
 
-# # Database access function to find the name of a race given the race_ID
-# # ---------------------------------------------------------------------
-# def find_race_from_ID(race_ID: int):
-#     with sqlite3.connect(db_name) as conn:
-#         cursor = conn.cursor()
-#         cursor.execute("""SELECT distance, stroke
-#                         FROM race
-#                         WHERE race_ID = ? """ , (str(race_ID),))
-#         result = cursor.fetchone()
-#         result = str(result[0]) + " " + str(result[1])
-#         return result
+# Database access function to find the name of a race given the race_ID
+# ---------------------------------------------------------------------
+def find_race_from_ID(race_ID: int):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT distance, stroke
+                        FROM race
+                        WHERE race_ID = ? """ , (str(race_ID),))
+        result = cursor.fetchone()
+        result = str(result[0]) + " " + str(result[1])
+        return result
     
 
 
@@ -270,5 +270,27 @@ def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: st
     return True
 
 
+
+def find_PBs(rankings_ID: int):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        PBs = []
+
+        for i in range(1,36):
+            cursor.execute("""SELECT race_ID, MIN(final_time), date
+                            FROM result
+                            WHERE rankings_ID = ? AND race_ID = ? """ , (str(rankings_ID), str(i)))
+            result = cursor.fetchall()
+
+            if result[0][0] != None:
+                raceName = find_race_from_ID(result[0][0])
+                PBs.append((raceName, result[0][1], result[0][2]))
+
+        return PBs
+
+
+
 # createTables()
 # populate_race_table()
+

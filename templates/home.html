@@ -1,41 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>'Project Name' - Home</title>
 </head>
+
 <body>
 
-    
 
-{% with messages = get_flashed_messages() %}
+
+    {% with messages = get_flashed_messages() %}
     {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-        <hr>
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    <hr>
     {% endif %}
-{% endwith %}
-
+    {% endwith %}
 
 
 
     <h1>Home</h1>
 
-    <form>
 
-        <input type="submit" value="Log out" formaction="/logout" formmethod="POST"/>
-        <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST"/>
-        <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST"/>
+<style>
 
-    </form>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+
+th, td {
+  border:1px solid black;
+}
+
+
+legend {
+  font-size: 1.5em;;
+}
+
+</style>
+
+
+
+<table>
+    <tr style="font-weight: bold;">
+        <th>Race</th>
+        <th>PB</th>
+        <th>Date</th>
+        <th>Goal Time</th>
+        <th>Time to Drop</th>
+        <th>Time to Drop - Per length</th>
+    </tr>
+
+    {% for swim in PBs %}
+        <tr style="font-size: 0.85em; font-weight: Thin;">
+          <td>{{ swim[0] }}</td>
+          <td style="text-align: center;">{{ swim[1] }}</td>
+          <td>{{ swim[2] }}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+    {% endfor %} 
+
+</table>
+
+
+
+<br>
+<br>
+
+
+
+
+<form action="/addSwim" method="POST">
+    <fieldset>
+    <legend>Add a Swim: </legend>
+
+    <label for="race_ID">Choose an event:</label>
+  <select id="race_ID" name="race_ID">
+    <option value="1">50 Freestyle</option>
+    <option value="2">100 Freestyle</option>
+    <option value="3">200 Freestyle</option>
+    <option value="4">400 Freestyle</option>
+    <option value="5">800 Freestyle</option>
+    <option value="6">1500 Freestyle</option>
+    <option value="7">50 Breaststroke</option>
+    <option value="8">100 Breaststroke</option>
+    <option value="9">200 Breaststroke</option>
+    <option value="10">50 Butterfly</option>
+    <option value="11">100 Butterfly</option>
+    <option value="12">200 Butterfly</option>
+    <option value="13">50 Backstroke</option>
+    <option value="14">100 Backstroke</option>
+    <option value="15">200 Backstroke</option>
+    <option value="16">200 IM</option>
+    <option value="17">400 IM</option>
+    <option value="18">100 IM</option>
+  </select>
+
+<br>
+
+  <label for="course">Choose a course:</label>
+  <select id="course" name="course">
+    <option value="S">Short Course</option>
+    <option value="L">Long Course</option>
+  </select>
+
+<br>
+
+<label for="comp_name"> Competition Name: </label>
+<input name="comp_name" id="comp_name" type="text"/>
+
+<br>
+
+<label for="date">Date of swim:</label>
+<input name="date" id="date" type="date">
+
+<br>
+
+<label for="final_time">Time:</label>
+<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+
+<br>
+
+<label for="goal_time">Goal Time:</label>
+<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+
+<br>
+
+<input type="submit" value="Add Swim" />
+
+
+</fieldset>
+</form>
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<form>
+
+    <input type="submit" value="Log out" formaction="/logout" formmethod="POST" />
+    <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST" />
+    <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST" />
+
+</form>
 
 
 </body>
+
 </html>
-
-
-
-
-

@@ -1,6 +1,6 @@
 #### imports ####
 from flask import Blueprint, request, render_template, flash   
-from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account
+from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account, find_PBs
 from markupsafe import Markup 
 from dataScraping import fetch_data_login
 
@@ -48,8 +48,11 @@ def login():
                 for swim in stroke:
                         push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
 
+            #print(table_entry(currentSwimmer_ID))
 
-            return render_template("home.html")
+
+            PBs = find_PBs(currentSwimmer_ID)
+            return render_template("home.html", PBs=PBs)
 
     # or assuming first-time form visit - load login form
     else:
@@ -172,7 +175,8 @@ def createAccount():
                         push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
 
 
-                return render_template("home.html")
+                PBs = find_PBs(currentSwimmer_ID)
+                return render_template("home.html", PBs=PBs)
             else:
                 flash("Sign-up failed - please try again")
                 return render_template("createAccount.html")
@@ -224,5 +228,6 @@ def refreshData():
 
     flash("Data refresh complete")
 
-    return render_template("home.html")
+    PBs = find_PBs(currentSwimmer_ID)
+    return render_template("home.html", PBs=PBs)
 
