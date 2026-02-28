@@ -271,11 +271,14 @@ def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: st
 
 
 
+#Database access function to find PBs for a swimmer given their rankings_ID
+# -------------------------------------------------------------------------
 def find_PBs(rankings_ID: int):
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
 
-        PBs = []
+        short_course_PBs = []
+        long_course_PBs = []
 
         for i in range(1,36):
             cursor.execute("""SELECT race_ID, MIN(final_time), date
@@ -285,9 +288,12 @@ def find_PBs(rankings_ID: int):
 
             if result[0][0] != None:
                 raceName = find_race_from_ID(result[0][0])
-                PBs.append((raceName, result[0][1], result[0][2]))
+                if i <= 18:
+                    short_course_PBs.append((raceName, result[0][1], result[0][2]))
+                else:
+                    long_course_PBs.append((raceName, result[0][1], result[0][2]))
 
-        return PBs
+        return short_course_PBs, long_course_PBs
 
 
 

@@ -47,7 +47,9 @@ legend {
 
 
 
+<h3>Short Course PBs</h3>
 <table>
+  
     <tr style="font-weight: bold;">
         <th>Race</th>
         <th>PB</th>
@@ -57,16 +59,42 @@ legend {
         <th>Time to Drop - Per length</th>
     </tr>
 
-    {% for swim in PBs %}
+    {% for swim in short_PBs %}
         <tr style="font-size: 0.85em; font-weight: Thin;">
-          <td>{{ swim[0] }}</td>
-          <td style="text-align: center;">{{ swim[1] }}</td>
-          <td>{{ swim[2] }}</td>
+          <td style="text-align: left;">{{ swim[0] }}</td>
+          <td style="text-align: left;">{{ swim[1] }}</td>
+          <td style="text-align: center;">{{ swim[2] }}</td>
           <td></td>
           <td></td>
           <td></td>
         </tr>
     {% endfor %} 
+
+</table>
+
+<br>
+
+<h3>Long Course PBs</h3>
+<table>
+  <tr style="font-weight: bold;">
+    <th>Race</th>
+    <th>PB</th>
+    <th>Date</th>
+    <th>Goal Time</th>
+    <th>Time to Drop</th>
+    <th>Time to Drop - Per length</th>
+  </tr>
+
+  {% for swim in long_PBs %}
+    <tr style="font-size: 0.85em; font-weight: Thin;">
+      <td style="text-align: left;">{{ swim[0] }}</td>
+      <td style="text-align: left;">{{ swim[1] }}</td>
+      <td style="text-align: center;">{{ swim[2] }}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  {% endfor %}
 
 </table>
 

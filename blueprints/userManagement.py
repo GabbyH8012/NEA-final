@@ -48,11 +48,9 @@ def login():
                 for swim in stroke:
                         push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
 
-            #print(table_entry(currentSwimmer_ID))
-
-
-            PBs = find_PBs(currentSwimmer_ID)
-            return render_template("home.html", PBs=PBs)
+            #finding PBs for the swimmer and rendering the home page with this data
+            short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
 
     # or assuming first-time form visit - load login form
     else:
@@ -175,8 +173,8 @@ def createAccount():
                         push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
 
 
-                PBs = find_PBs(currentSwimmer_ID)
-                return render_template("home.html", PBs=PBs)
+                short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
             else:
                 flash("Sign-up failed - please try again")
                 return render_template("createAccount.html")
@@ -228,6 +226,6 @@ def refreshData():
 
     flash("Data refresh complete")
 
-    PBs = find_PBs(currentSwimmer_ID)
-    return render_template("home.html", PBs=PBs)
+    short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
 
