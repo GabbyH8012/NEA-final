@@ -1,7 +1,7 @@
 #### imports ####
 from bs4 import BeautifulSoup
 import httpx
-# from database.database import find_race_from_ID
+from flask import session
 
 
 
@@ -12,16 +12,16 @@ urlBase = "https://www.swimmingresults.org/individualbest/personal_best_time_dat
 
 # Function to find the url to be scraped based on the swimmer and race
 # --------------------------------------------------------------------
-def find_url(race, course, currentSwimmer_ID):
-    url = urlBase.format(currentSwimmer_ID, race, course)
+def find_url(race, course):
+    url = urlBase.format(session["currentSwimmer_ID"], race, course)
     return url
     
 
 
 # Function to scrape data from the calculated url
 # -----------------------------------------------
-def extract_data(race_ID_num, course, currentSwimmer_ID, race_ID):
-    url = find_url(race_ID_num, course, currentSwimmer_ID)
+def extract_data(race_ID_num, course, race_ID):
+    url = find_url(race_ID_num, course)
     response = httpx.get(url)
     response_html = response.text
     soup = BeautifulSoup(response_html, "html.parser")
@@ -40,11 +40,14 @@ def extract_data(race_ID_num, course, currentSwimmer_ID, race_ID):
         times = record.find("td", class_="tdrank_right")
         if times != None:
             times = times.text.strip()
+            times = time_format(times)
+
 
         #finding the data that the above time was achieved
         date = record.find_all("td", class_="tdrank_centre")
         if date != []:
             date = date[2].text
+            date = date_format(date)
         else:
             date = None
 
@@ -73,15 +76,14 @@ def extract_data(race_ID_num, course, currentSwimmer_ID, race_ID):
 
 # Function that tells the program how to refresh the times in the rankings website when a user logs in
 # ----------------------------------------------------------------------------------------------------
-def fetch_data_login(currentSwimmer_ID):
+def fetch_data_login():
         
         all_data = []
-
 
         for race_ID in range(1,19):
             course = "S"
 
-            result_short = extract_data(race_ID, course, currentSwimmer_ID, race_ID)
+            result_short = extract_data(race_ID, course, race_ID)
 
             if result_short != []:         
                 all_data.append(result_short)
@@ -90,13 +92,50 @@ def fetch_data_login(currentSwimmer_ID):
         for race_ID in range(19,36):
             course = "L"
 
-            result_long = extract_data((race_ID - 18), course, currentSwimmer_ID, race_ID)
+            result_long = extract_data((race_ID - 18), course, race_ID)
             if result_long != []:
                 all_data.append(result_long)
 
 
         result = all_data
         return result
+
+
+
+# Function to format the times scraped from the rankings website into a consistent format for the database
+# --------------------------------------------------------------------------------------------------------
+def time_format(time_str):
+    
+    value = str(time_str).strip()
+    if value == "":
+        return None
+    
+    if ":" in value:
+        return value
+    
+    else:
+        value = "00:" + value
+        return value
+    
+
+
+# Function to format date value to match format in database
+# ---------------------------------------------------------
+def date_format(date_str):
+
+    value = str(date_str).strip()
+    if value == "":
+        return None
+    
+    if "-" in value:
+        value = value.replace("-", "/")
+        year, month, day = value.split("/")
+        if len(year) == 4:
+            year = year[2:]
+        value = f"{day}/{month}/{year}"
+        return value
+    else:
+        return value
 
 
 

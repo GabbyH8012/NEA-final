@@ -1,4 +1,6 @@
+#### imports ####
 import sqlite3
+from flask import session, flash
 
 db_name = "database/swimmer_info.db"
 
@@ -83,7 +85,7 @@ def createTables():
 
 
 # Database access function to check if there is already a swimmer with the same rankings_ID or email
-# -----------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 def check_existing_swimmer(rankings_ID: int , email: str) -> bool:
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
@@ -150,7 +152,7 @@ def get_user_info(rankings_ID: int):
 
 # Database access function to delete an account from the database
 # ---------------------------------------------------------------
-def delete_account(rankings_ID: int):
+def delete_account_database(rankings_ID: int):
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         cursor.execute("""DELETE FROM user 
@@ -238,7 +240,7 @@ def find_race_from_ID(race_ID: int):
 
 # Database access function to enter extracted data into the database
 # ------------------------------------------------------------------
-def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: str, final_time: str, venue: str):
+def push_extracted_data(race_ID: int, comp_name: str, date: str, final_time: str, venue: str):
     with sqlite3.connect(db_name) as conn:
         cursor = conn.cursor()
         
@@ -261,10 +263,10 @@ def push_extracted_data(rankings_ID: int, race_ID: int, comp_name: str, date: st
 
         cursor.execute("""SELECT *
                         FROM result
-                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? """ , (str(rankings_ID), str(race_ID), comp_name, date))
+                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? """ , (session['currentSwimmer_ID'], str(race_ID), comp_name, date))
         result3 = cursor.fetchone()
         if result3 == None:
-            cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (rankings_ID, race_ID, comp_name, date, final_time))
+            cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (session['currentSwimmer_ID'], race_ID, comp_name, date, final_time))
 
 
     return True
@@ -281,22 +283,48 @@ def find_PBs(rankings_ID: int):
         long_course_PBs = []
 
         for i in range(1,36):
-            cursor.execute("""SELECT race_ID, MIN(final_time), date
+            cursor.execute("""SELECT race_ID, MIN(final_time), date, goal_time
                             FROM result
                             WHERE rankings_ID = ? AND race_ID = ? """ , (str(rankings_ID), str(i)))
             result = cursor.fetchall()
 
+            if result[0][3] == None:
+                date = "-"
+            else:
+                date = result[0][3]
+
             if result[0][0] != None:
                 raceName = find_race_from_ID(result[0][0])
                 if i <= 18:
-                    short_course_PBs.append((raceName, result[0][1], result[0][2]))
+                    short_course_PBs.append((raceName, result[0][1], result[0][2], date))
                 else:
-                    long_course_PBs.append((raceName, result[0][1], result[0][2]))
+                    long_course_PBs.append((raceName, result[0][1], result[0][2], date))
 
         return short_course_PBs, long_course_PBs
 
 
 
-# createTables()
-# populate_race_table()
+# Database access function to add a new swim to the database with the imputted details
+# ------------------------------------------------------------------------------------
+def add_swim_to_database(race_ID, comp_name, date, final_time, goal_time):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT *
+                        FROM result
+                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? AND final_time = ? """ , (session['currentSwimmer_ID'], str(race_ID), comp_name, date, final_time))
+        result = cursor.fetchone()
+
+
+        if result == None:
+
+            cursor.execute("""INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time, goal_time) VALUES (?, ?, ?, ?, ?, ?)""", (session['currentSwimmer_ID'], race_ID, comp_name, date, final_time, goal_time))
+        
+            cursor.execute("""INSERT into competition (comp_name) VALUES (?)""", (comp_name,))
+
+            cursor.execute("""INSERT into meet (comp_name, date) VALUES (?, ?)""", (comp_name, date))
+
+
+        else:
+            flash("This swim already exists - if your inputs are correct, then this swim has already been uploaded by Swim England and is already in the database")
 

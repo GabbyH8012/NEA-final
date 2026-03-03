@@ -1,22 +1,19 @@
 #### imports ####
-from flask import Blueprint, request, render_template, flash   
-from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account, find_PBs
+from flask import Blueprint, request, render_template, flash, session
+from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account_database, find_PBs
 from markupsafe import Markup 
 from dataScraping import fetch_data_login
 
 
 
-# Create Blueprint for User account creation and login
+# Create blueprint for user management fucntions
 userManagement_bp = Blueprint("userManagement", __name__, template_folder='../templates')
 
 
-# user login handler
+# User login handler
 # ------------------
 @userManagement_bp.route("/login", methods=['GET', 'POST'])
 def login():   
-
-    # Access global variables
-    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
 
     if request.method == 'POST':
         
@@ -37,19 +34,19 @@ def login():
 
         elif check_login_credentials(rankings_ID, password) == True:
             
-            currentSwimmer_ID = rankings_ID
+            session["currentSwimmer_ID"] = rankings_ID
             currentSwimmer_name = get_user_info(rankings_ID)[0]
             currentSwimmer_email = get_user_info(rankings_ID)[1]
 
 
             #fetching data from the rankings website and pushing it to the database
-            scrapedData = fetch_data_login(currentSwimmer_ID)
+            scrapedData = fetch_data_login()
             for stroke in scrapedData:
                 for swim in stroke:
-                        push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
+                        push_extracted_data(swim[0], swim[1], swim[2], swim[3], swim[4])
 
             #finding PBs for the swimmer and rendering the home page with this data
-            short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+            short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
             return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
 
     # or assuming first-time form visit - load login form
@@ -160,20 +157,19 @@ def createAccount():
         if message == "":
             successful_add = add_new_swimmer(rankings_ID, name, email, password)
             if successful_add:
-                global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
-                currentSwimmer_ID = rankings_ID
-                currentSwimmer_name = name
-                currentSwimmer_email = email
+                session['currentSwimmer_ID'] = rankings_ID
+                session['currentSwimmer_name'] = name
+                session['currentSwimmer_email'] = email
 
 
                 #fetching data from the rankings website and pushing it to the database
-                scrapedData = fetch_data_login(currentSwimmer_ID)
+                scrapedData = fetch_data_login()
                 for stroke in scrapedData:
                     for swim in stroke:
-                        push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
+                        push_extracted_data(swim[0], swim[1], swim[2], swim[3], swim[4])
 
 
-                short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+                short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
                 return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
             else:
                 flash("Sign-up failed - please try again")
@@ -192,10 +188,7 @@ def createAccount():
 # ---------------
 @userManagement_bp.route("/logout", methods=['GET', 'POST'])
 def logout():   
-    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
-    currentSwimmer_ID = None
-    currentSwimmer_name = None
-    currentSwimmer_email = None
+    session.clear()
     return render_template("login.html")
 
 
@@ -203,11 +196,8 @@ def logout():
 # ----------------------
 @userManagement_bp.route("/deleteAccount", methods=['GET', 'POST'])
 def deleteAccount():
-    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
-    delete_account(currentSwimmer_ID)
-    currentSwimmer_ID = None
-    currentSwimmer_name = None
-    currentSwimmer_email = None
+    delete_account_database()
+    session.clear()
     return render_template("login.html")
 
 
@@ -216,16 +206,14 @@ def deleteAccount():
 @userManagement_bp.route("/refreshData", methods=['GET', 'POST'])
 def refreshData():
 
-    global currentSwimmer_ID, currentSwimmer_name, currentSwimmer_email
-
     #data scraping from the rankings website and pushing it to the database if it does not already exist
-    scrapedData = fetch_data_login(currentSwimmer_ID)
+    scrapedData = fetch_data_login()
     for stroke in scrapedData:
         for swim in stroke:
-                push_extracted_data(currentSwimmer_ID, swim[0], swim[1], swim[2], swim[3], swim[4])
+                push_extracted_data(session['currentSwimmer_ID'], swim[0], swim[1], swim[2], swim[3], swim[4])
 
     flash("Data refresh complete")
 
-    short_PBs, long_PBs = find_PBs(currentSwimmer_ID)
+    short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
     return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
 
