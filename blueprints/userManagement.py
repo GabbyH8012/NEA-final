@@ -37,6 +37,7 @@ def login():
             session["currentSwimmer_ID"] = rankings_ID
             currentSwimmer_name = get_user_info(rankings_ID)[0]
             currentSwimmer_email = get_user_info(rankings_ID)[1]
+            
 
 
             #fetching data from the rankings website and pushing it to the database
@@ -45,9 +46,14 @@ def login():
                 for swim in stroke:
                         push_extracted_data(swim[0], swim[1], swim[2], swim[3], swim[4])
 
+
+            # goals = load_goals(session["currentSwimmer_ID"])
+
+
             #finding PBs for the swimmer and rendering the home page with this data
             short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, race_ID=None)
+        
 
     # or assuming first-time form visit - load login form
     else:
@@ -210,7 +216,7 @@ def refreshData():
     scrapedData = fetch_data_login()
     for stroke in scrapedData:
         for swim in stroke:
-                push_extracted_data(session['currentSwimmer_ID'], swim[0], swim[1], swim[2], swim[3], swim[4])
+                push_extracted_data(swim[0], swim[1], swim[2], swim[3], swim[4])
 
     flash("Data refresh complete")
 

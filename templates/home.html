@@ -60,13 +60,14 @@ legend {
     </tr>
                                           
   {% for swim in short_PBs %}
+  
     <tr style="font-size: 0.85em; font-weight: Thin;">
     <td style="text-align: left;">{{ swim[0] }}</td>
     <td style="text-align: left;">{{ swim[1] }}</td>
     <td style="text-align: center;">{{ swim[2] }}</td>
-    <td style="text-align: center;">{{ swim[3] }}</td>
-    <td></td>
-    <td></td>
+    <td style="text-align: center;">{{ swim[3] if swim[3] is not none else '-' }}</td>
+    <td style="text-align: center;">{{ swim[4] if swim[4] is not none else '-' }}</td>
+    <td style="text-align: center;">{{ swim[5] if swim[5] is not none else '-' }}</td>
     </tr>
   {% endfor %} 
                                                                                                                               
@@ -91,9 +92,9 @@ legend {
       <td style="text-align: left;">{{ swim[0] }}</td>
       <td style="text-align: left;">{{ swim[1] }}</td>
       <td style="text-align: center;">{{ swim[2] }}</td>
-      <td style="text-align: center;">{{ swim[3] }}</td>
-      <td></td>
-      <td></td>
+      <td style="text-align: center;">{{ swim[3] if swim[3] is not none else '-' }}</td>
+      <td style="text-align: center;">{{ swim[4] if swim[4] is not none else '-' }}</td>
+      <td style="text-align: center;">{{ swim[5] if swim[5] is not none else '-' }}</td>
     </tr>
   {% endfor %}
 
@@ -154,7 +155,7 @@ legend {
 <br>
 
 <label for="final_time">Time:</label>
-<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh - optional" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
 
 <br>
 
@@ -168,6 +169,65 @@ legend {
 
 </fieldset>
 </form>
+
+
+<br>
+<br>
+<br>
+
+
+
+<form action="/addGoal" method="POST">
+  <fieldset>
+  <legend>Add a Goal Time: </legend>
+
+  <label for="race_ID">Choose an event:</label>
+  <select id="race_ID" name="race_ID">
+    <option value="1">50 Freestyle</option>
+    <option value="2">100 Freestyle</option>
+    <option value="3">200 Freestyle</option>
+    <option value="4">400 Freestyle</option>
+    <option value="5">800 Freestyle</option>
+    <option value="6">1500 Freestyle</option>
+    <option value="7">50 Breaststroke</option>
+    <option value="8">100 Breaststroke</option>
+    <option value="9">200 Breaststroke</option>
+    <option value="10">50 Butterfly</option>
+    <option value="11">100 Butterfly</option>
+    <option value="12">200 Butterfly</option>
+    <option value="13">50 Backstroke</option>
+    <option value="14">100 Backstroke</option>
+    <option value="15">200 Backstroke</option>
+    <option value="16">200 IM</option>
+    <option value="17">400 IM</option>
+    <option value="18">100 IM</option>
+  </select>
+
+<br>
+
+  <label for="course">Choose a course:</label>
+  <select id="course" name="course">
+    <option value="S">Short Course</option>
+    <option value="L">Long Course</option>
+  </select>
+
+<br>
+
+<label for="goal_time"> Goal Time: </label>
+<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+
+<br>
+
+<input type="submit" value="Add Goal" />
+
+
+</fieldset>
+</form>
+
+
+
+
+
 
 
 

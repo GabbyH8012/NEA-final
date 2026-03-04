@@ -110,12 +110,16 @@ def time_format(time_str):
     if value == "":
         return None
     
-    if ":" in value:
-        return value
-    
-    else:
+    if ":" not in value:
         value = "00:" + value
-        return value
+
+    if value.count(":") == 2:
+        value = value [2:]
+
+    if value[-4:] == "0000":
+        value = value[:-4]
+    
+    return value
     
 
 
@@ -136,6 +140,5 @@ def date_format(date_str):
         return value
     else:
         return value
-
 
 

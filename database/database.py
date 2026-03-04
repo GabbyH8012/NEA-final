@@ -1,6 +1,9 @@
 #### imports ####
 import sqlite3
+from datetime import datetime
 from flask import session, flash
+from dataScraping import time_format
+
 
 db_name = "database/swimmer_info.db"
 
@@ -283,24 +286,61 @@ def find_PBs(rankings_ID: int):
         long_course_PBs = []
 
         for i in range(1,36):
-            cursor.execute("""SELECT race_ID, MIN(final_time), date, goal_time
+            cursor.execute("""SELECT race_ID, MIN(final_time), date
                             FROM result
                             WHERE rankings_ID = ? AND race_ID = ? """ , (str(rankings_ID), str(i)))
             result = cursor.fetchall()
 
-            if result[0][3] == None:
-                date = "-"
+            cursor.execute("""SELECT goal_time
+                            FROM goal
+                            WHERE rankings_ID = ? AND race_ID = ? """ , (str(rankings_ID), str(i)))
+            goal_time = cursor.fetchone()
+
+            if goal_time is None:
+                goal_time = "-"
             else:
-                date = result[0][3]
+                goal_time = goal_time[0]
 
             if result[0][0] != None:
                 raceName = find_race_from_ID(result[0][0])
-                if i <= 18:
-                    short_course_PBs.append((raceName, result[0][1], result[0][2], date))
+                pb_time = result[0][1]
+                drop_time = calculate_drop_time(pb_time, goal_time)
+                lengths = num_lengths(result[0][0])
+
+                if drop_time != "You have achieved your goal time! - Add a new goal":
+                    drop_per_length = calculate_drop_per_length(pb_time, goal_time, lengths)
+                    
                 else:
-                    long_course_PBs.append((raceName, result[0][1], result[0][2], date))
+                    drop_per_length = "-"
+
+                
+                if i <= 18:
+                    short_course_PBs.append((raceName, pb_time, result[0][2], goal_time, drop_time, drop_per_length))
+                else:
+                    long_course_PBs.append((raceName, pb_time, result[0][2], goal_time, drop_time, drop_per_length))
 
         return short_course_PBs, long_course_PBs
+
+
+
+# Function to calculate the required time drop per length to achieve the goal time from PB
+# ----------------------------------------------------------------------------------------
+def calculate_drop_per_length(pb_time, goal_time, lengths):
+    if lengths is None or lengths == 0:
+        return "-"
+
+    pb_parsed = parse_swim_time(pb_time)
+    goal_parsed = parse_swim_time(goal_time)
+
+    if pb_parsed is None or goal_parsed is None:
+        return "-"
+
+    difference_seconds = (pb_parsed - goal_parsed).total_seconds()
+    if difference_seconds <= 0:
+        return "-"
+
+    per_length_seconds = difference_seconds / lengths
+    return f"{per_length_seconds:.2f}"
 
 
 
@@ -315,16 +355,161 @@ def add_swim_to_database(race_ID, comp_name, date, final_time, goal_time):
                         WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? AND final_time = ? """ , (session['currentSwimmer_ID'], str(race_ID), comp_name, date, final_time))
         result = cursor.fetchone()
 
-
         if result == None:
-
             cursor.execute("""INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time, goal_time) VALUES (?, ?, ?, ?, ?, ?)""", (session['currentSwimmer_ID'], race_ID, comp_name, date, final_time, goal_time))
-        
             cursor.execute("""INSERT into competition (comp_name) VALUES (?)""", (comp_name,))
-
             cursor.execute("""INSERT into meet (comp_name, date) VALUES (?, ?)""", (comp_name, date))
-
 
         else:
             flash("This swim already exists - if your inputs are correct, then this swim has already been uploaded by Swim England and is already in the database")
+
+
+
+# Database access function to add a new goal time to the database
+# ---------------------------------------------------------------
+def add_goal_to_database(race_ID, goal_time):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT *
+                        FROM goal
+                        WHERE rankings_ID = ? AND race_ID = ? """ , (session['currentSwimmer_ID'], str(race_ID)))
+        result = cursor.fetchone()
+
+        if result != None:
+            cursor.execute("""UPDATE goal
+                            SET goal_time = ?
+                            WHERE rankings_ID = ? AND race_ID = ? """ , (goal_time, session['currentSwimmer_ID'], str(race_ID)))
+            
+        else:
+            cursor.execute("""INSERT INTO goal (rankings_ID, race_ID, goal_time) VALUES (?, ?, ?)""", (session['currentSwimmer_ID'], str(race_ID), goal_time))
+
+
+
+# Database access function to find a swimmer's PB for a specific race
+# -------------------------------------------------------------------
+def find_PB_from_ID(race_ID):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT MIN(final_time)
+                        FROM result
+                        WHERE rankings_ID = ? AND race_ID = ? """ , (str(session['currentSwimmer_ID']), str(race_ID)))
+        result = cursor.fetchone()
+
+        if result[0] != None:
+            return result[0]
+        else:
+            return None
+        
+
+
+# Database access function to find a swimmer's goal time for a specific event
+# ---------------------------------------------------------------------------
+def find_goal_from_ID(race_ID):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT goal_time
+                        FROM goal
+                        WHERE rankings_ID = ? AND race_ID = ? """ , (str(session['currentSwimmer_ID']), str(race_ID)))
+        result = cursor.fetchone()  
+
+        if result[0] != None:
+            return result[0]
+        else:
+            return None
+        
+
+
+# # Database access function to load all of a swimmer's goal times and associated
+# # -----------------------------------------------------------------------------
+# def load_goals(rankings_ID):
+#     with sqlite3.connect(db_name) as conn:
+#         cursor = conn.cursor()
+
+#         cursor.execute("""SELECT race_ID, goal_time
+#                         FROM goal
+#                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
+#         result = cursor.fetchall()
+#         return result
+    
+
+
+# Function to convert time variables into a format that allows time manipulation and calculations
+# -----------------------------------------------------------------------------------------------
+def parse_swim_time(value):
+
+    value = str(value).strip()
+    if value == "":
+        return None
+
+    for format in ("%M:%S.%f", "%M:%S"):
+        try:
+            return datetime.strptime(value, format)
+        except ValueError:
+            continue
+
+    return None
+
+
+
+# Function to calculated the required time drop to achieve the goal time from PB
+# ------------------------------------------------------------------------------
+def calculate_drop_time(pb_time, goal_time):
+    pb_parsed = parse_swim_time(pb_time)
+    goal_parsed = parse_swim_time(goal_time)
+
+    if pb_parsed is None or goal_parsed is None:
+        return "-"
+
+    difference = pb_parsed - goal_parsed
+
+    if difference.total_seconds() < 0:
+        return "You have achieved your goal time! - Add a new goal"
+
+    total_hundredths = round(difference.total_seconds() * 100)
+    minutes = total_hundredths // 6000
+    seconds = (total_hundredths % 6000) // 100
+    hundredths = total_hundredths % 100
+
+    return f"{minutes:02}:{seconds:02}.{hundredths:02}"
+
+
+
+# Function to calculate the number of lengths in a race
+# -----------------------------------------------------
+def num_lengths(race_ID):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT distance, course
+                        FROM race
+                        WHERE race_ID = ? """ , (str(race_ID),))
+        result = cursor.fetchone()
+
+        if result[0] != None:
+            metres = result[0]
+            course = result[1]
+
+            if course in ("S", "Short"):
+                lengths = metres / 25
+            elif course in ("L", "Long"):
+                lengths = metres / 50
+            else:
+                return None
+
+            return lengths
+
+        else:
+            return None
+        
+
+
+
+
+
+
+
+
+
 

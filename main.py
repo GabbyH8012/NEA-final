@@ -6,7 +6,6 @@ from blueprints.manualDataEntry import manualDataEntry_bp
 from database.database import createTables, populate_race_table
 
 
-      
 
 # Create flask application
 app = Flask(__name__)
