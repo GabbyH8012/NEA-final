@@ -23,6 +23,10 @@
 
 
     <h1>Home</h1>
+    <br>
+    <br>
+
+
 
 
 <style>
@@ -33,17 +37,79 @@ table {
   width: 80%;
 }
 
-
 th, td {
   border:1px solid black;
 }
-
 
 legend {
   font-size: 1.5em;;
 }
 
 </style>
+
+
+
+
+
+
+
+
+<form action="/filter" method="POST">
+    <fieldset>
+    <legend>Filter: </legend>
+
+  <label for="filter_race"> Filter races: </label>
+  <select id="filter_race" name="filter_race" multiple>
+    <option value="1">50 Freestyle</option>
+    <option value="2">100 Freestyle</option>
+    <option value="3">200 Freestyle</option>
+    <option value="4">400 Freestyle</option>
+    <option value="5">800 Freestyle</option>
+    <option value="6">1500 Freestyle</option>
+    <option value="7">50 Breaststroke</option>
+    <option value="8">100 Breaststroke</option>
+    <option value="9">200 Breaststroke</option>
+    <option value="10">50 Butterfly</option>
+    <option value="11">100 Butterfly</option>
+    <option value="12">200 Butterfly</option>
+    <option value="13">50 Backstroke</option>
+    <option value="14">100 Backstroke</option>
+    <option value="15">200 Backstroke</option>
+    <option value="16">200 IM</option>
+    <option value="17">400 IM</option>
+    <option value="18">100 IM</option>
+  </select>
+
+  <p>(Hold down the Ctrl (windows) or Command (Mac) button to select multiple options.)</p>
+
+<br>
+
+  <label for="filter_course">Filter Courses:</label>
+  <select id="filter_course" name="filter_course" multiple>
+    <option value="S">Short Course</option>
+    <option value="L">Long Course</option>
+  </select>
+
+<br>
+
+<input type="submit" value="Show races" />
+
+</fieldset>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,8 +125,7 @@ legend {
     <th>Time to Drop - Per length</th>
     </tr>
                                           
-  {% for swim in short_PBs %}
-  
+  {% for swim in short_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in selectedRaceNames %}
     <tr style="font-size: 0.85em; font-weight: Thin;">
     <td style="text-align: left;">{{ swim[0] }}</td>
     <td style="text-align: left;">{{ swim[1] }}</td>
@@ -73,7 +138,13 @@ legend {
                                                                                                                               
 </table>
 
+
+
+
 <br>
+
+
+
 
 <h3>Long Course PBs</h3>
 <table>
@@ -87,7 +158,7 @@ legend {
     <th>Time to Drop - Per length</th>
   </tr>
 
-  {% for swim in long_PBs %}
+  {% for swim in long_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in selectedRaceNames %}
     <tr style="font-size: 0.85em; font-weight: Thin;">
       <td style="text-align: left;">{{ swim[0] }}</td>
       <td style="text-align: left;">{{ swim[1] }}</td>
@@ -102,8 +173,10 @@ legend {
 
 
 
+
 <br>
 <br>
+
 
 
 
@@ -155,25 +228,29 @@ legend {
 <br>
 
 <label for="final_time">Time:</label>
-<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh - optional" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
 
 <br>
 
 <label for="goal_time">Goal Time:</label>
-<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
+<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh - optional" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
 
 <br>
 
 <input type="submit" value="Add Swim" />
 
-
 </fieldset>
 </form>
 
 
+
+
+
 <br>
 <br>
 <br>
+
+
 
 
 
@@ -220,7 +297,6 @@ legend {
 
 <input type="submit" value="Add Goal" />
 
-
 </fieldset>
 </form>
 
@@ -237,6 +313,11 @@ legend {
 <br>
 <br>
 <br>
+
+
+
+
+
 
 
 <form>

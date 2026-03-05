@@ -52,7 +52,7 @@ def login():
 
             #finding PBs for the swimmer and rendering the home page with this data
             short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, race_ID=None)
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
         
 
     # or assuming first-time form visit - load login form
@@ -176,7 +176,7 @@ def createAccount():
 
 
                 short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
+                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
             else:
                 flash("Sign-up failed - please try again")
                 return render_template("createAccount.html")
@@ -221,5 +221,5 @@ def refreshData():
     flash("Data refresh complete")
 
     short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
 

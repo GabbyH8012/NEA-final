@@ -2,7 +2,6 @@
 import sqlite3
 from datetime import datetime
 from flask import session, flash
-from dataScraping import time_format
 
 
 db_name = "database/swimmer_info.db"
@@ -309,38 +308,15 @@ def find_PBs(rankings_ID: int):
 
                 if drop_time != "You have achieved your goal time! - Add a new goal":
                     drop_per_length = calculate_drop_per_length(pb_time, goal_time, lengths)
-                    
                 else:
                     drop_per_length = "-"
 
-                
                 if i <= 18:
                     short_course_PBs.append((raceName, pb_time, result[0][2], goal_time, drop_time, drop_per_length))
                 else:
                     long_course_PBs.append((raceName, pb_time, result[0][2], goal_time, drop_time, drop_per_length))
 
         return short_course_PBs, long_course_PBs
-
-
-
-# Function to calculate the required time drop per length to achieve the goal time from PB
-# ----------------------------------------------------------------------------------------
-def calculate_drop_per_length(pb_time, goal_time, lengths):
-    if lengths is None or lengths == 0:
-        return "-"
-
-    pb_parsed = parse_swim_time(pb_time)
-    goal_parsed = parse_swim_time(goal_time)
-
-    if pb_parsed is None or goal_parsed is None:
-        return "-"
-
-    difference_seconds = (pb_parsed - goal_parsed).total_seconds()
-    if difference_seconds <= 0:
-        return "-"
-
-    per_length_seconds = difference_seconds / lengths
-    return f"{per_length_seconds:.2f}"
 
 
 
@@ -352,7 +328,7 @@ def add_swim_to_database(race_ID, comp_name, date, final_time, goal_time):
 
         cursor.execute("""SELECT *
                         FROM result
-                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? AND final_time = ? """ , (session['currentSwimmer_ID'], str(race_ID), comp_name, date, final_time))
+                        WHERE rankings_ID = ? AND race_ID = ? AND comp_name = ? AND date = ? """ , (session['currentSwimmer_ID'], str(race_ID), comp_name, date))
         result = cursor.fetchone()
 
         if result == None:
@@ -422,20 +398,6 @@ def find_goal_from_ID(race_ID):
         
 
 
-# # Database access function to load all of a swimmer's goal times and associated
-# # -----------------------------------------------------------------------------
-# def load_goals(rankings_ID):
-#     with sqlite3.connect(db_name) as conn:
-#         cursor = conn.cursor()
-
-#         cursor.execute("""SELECT race_ID, goal_time
-#                         FROM goal
-#                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
-#         result = cursor.fetchall()
-#         return result
-    
-
-
 # Function to convert time variables into a format that allows time manipulation and calculations
 # -----------------------------------------------------------------------------------------------
 def parse_swim_time(value):
@@ -477,6 +439,27 @@ def calculate_drop_time(pb_time, goal_time):
 
 
 
+# Function to calculate the required time drop per length to achieve the goal time from PB
+# ----------------------------------------------------------------------------------------
+def calculate_drop_per_length(pb_time, goal_time, lengths):
+    if lengths is None or lengths == 0:
+        return "-"
+
+    pb_parsed = parse_swim_time(pb_time)
+    goal_parsed = parse_swim_time(goal_time)
+
+    if pb_parsed is None or goal_parsed is None:
+        return "-"
+
+    difference_seconds = (pb_parsed - goal_parsed).total_seconds()
+    if difference_seconds <= 0:
+        return "-"
+
+    per_length_seconds = difference_seconds / lengths
+    return f"{per_length_seconds:.2f}"
+
+
+
 # Function to calculate the number of lengths in a race
 # -----------------------------------------------------
 def num_lengths(race_ID):
@@ -503,6 +486,15 @@ def num_lengths(race_ID):
         else:
             return None
         
+
+
+
+
+
+
+
+
+
 
 
 

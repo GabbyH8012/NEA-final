@@ -1,8 +1,7 @@
 #### imports ####
 from flask import Blueprint, render_template, request, session
-from database.database import add_swim_to_database, find_PBs, add_goal_to_database, find_PB_from_ID
+from database.database import add_swim_to_database, find_PBs, add_goal_to_database, find_race_from_ID
 from dataScraping import date_format, time_format
-from datetime import datetime
 
 
 
@@ -41,13 +40,11 @@ def addSwim():
         add_swim_to_database(race_ID, comp_name, date, final_time, goal_time)
     
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
-
-
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
 
     else:
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
 
 
 
@@ -74,41 +71,44 @@ def addGoal():
         add_goal_to_database(race_ID, goal_time)
 
 
-        # drop = str(calculate_drop(goal_time, race_ID))
-        # drop = time_format(drop)
-
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs,)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
     
 
 
-# # Function to calculated the required time drop to achieve the goal time from PB
-# # ------------------------------------------------------------------------------
-# def calculate_drop(goal_time, race_ID):
-#     pb = find_PB_from_ID(race_ID)
-#     if pb is None:
-#         return None
+# add new swim handler
+# --------------------
+@manualDataEntry_bp.route("/filter", methods=['GET', 'POST'])
+def filter():
 
-#     def parse_swim_time(value):
-#         for fmt in ("%M:%S.%f", "%M:%S"):
-#             try:
-#                 return datetime.strptime(value, fmt)
-#             except ValueError:
-#                 continue
-#         raise ValueError(f"Invalid time format: {value}")
+        # Read data from the form if method is POST - data is submitted
+        race_IDs = request.form.getlist('filter_race')
+        courses = request.form.getlist('filter_course')
 
-#     pb_time = parse_swim_time(pb)
-#     goal_time_parsed = parse_swim_time(goal_time)
-#     drop = pb_time - goal_time_parsed
-#     return drop
+        short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
+
+        # If no race or course is selected, show all rows.
+        if race_IDs == [] or courses == []:
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
+
+        selected_race_names = []
+
+        # Build race IDs from selected races/courses, then map them to race names.
+        for race_id in race_IDs:
+            race_id_int = int(race_id)
+
+            if "S" in courses:
+                selected_race_names.append(find_race_from_ID(race_id_int))
+
+            if "L" in courses:
+                selected_race_names.append(find_race_from_ID(race_id_int + 18))
+
+        # Remove duplicates while preserving user selection order.
+        # selected_race_names = list(dict.fromkeys(selected_race_names))
+
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=selected_race_names)
 
 
 
-# # Function to calculated the required time drop per length to achieve the goal time from PB
-# # -----------------------------------------------------------------------------------------
-# def calculate_drop_per_length(goal_time, race_ID):
-#     drop = calculate_drop(goal_time, race_ID)
-
-  
 
 
