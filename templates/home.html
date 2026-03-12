@@ -58,41 +58,35 @@ legend {
     <fieldset>
     <legend>Filter: </legend>
 
-  <label for="filter_race"> Filter races: </label>
-  <select id="filter_race" name="filter_race" multiple>
-    <option value="1">50 Freestyle</option>
-    <option value="2">100 Freestyle</option>
-    <option value="3">200 Freestyle</option>
-    <option value="4">400 Freestyle</option>
-    <option value="5">800 Freestyle</option>
-    <option value="6">1500 Freestyle</option>
-    <option value="7">50 Breaststroke</option>
-    <option value="8">100 Breaststroke</option>
-    <option value="9">200 Breaststroke</option>
-    <option value="10">50 Butterfly</option>
-    <option value="11">100 Butterfly</option>
-    <option value="12">200 Butterfly</option>
-    <option value="13">50 Backstroke</option>
-    <option value="14">100 Backstroke</option>
-    <option value="15">200 Backstroke</option>
-    <option value="16">200 IM</option>
-    <option value="17">400 IM</option>
-    <option value="18">100 IM</option>
-  </select>
-
-  <p>(Hold down the Ctrl (windows) or Command (Mac) button to select multiple options.)</p>
+  <p>Filter races:</p>
+  <label><input type="checkbox" name="filter_race" value="1"> 50 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="2"> 100 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="3"> 200 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="4"> 400 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="5"> 800 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="6"> 1500 Freestyle</label><br>
+  <label><input type="checkbox" name="filter_race" value="7"> 50 Breaststroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="8"> 100 Breaststroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="9"> 200 Breaststroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="10"> 50 Butterfly</label><br>
+  <label><input type="checkbox" name="filter_race" value="11"> 100 Butterfly</label><br>
+  <label><input type="checkbox" name="filter_race" value="12"> 200 Butterfly</label><br>
+  <label><input type="checkbox" name="filter_race" value="13"> 50 Backstroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="14"> 100 Backstroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="15"> 200 Backstroke</label><br>
+  <label><input type="checkbox" name="filter_race" value="16"> 200 IM</label><br>
+  <label><input type="checkbox" name="filter_race" value="17"> 400 IM</label><br>
+  <label><input type="checkbox" name="filter_race" value="18"> 100 IM</label>
 
 <br>
 
-  <label for="filter_course">Filter Courses:</label>
-  <select id="filter_course" name="filter_course" multiple>
-    <option value="S">Short Course</option>
-    <option value="L">Long Course</option>
-  </select>
+  <p>Filter courses:</p>
+  <label><input type="checkbox" name="filter_course" value="S"> Short Course</label><br>
+  <label><input type="checkbox" name="filter_course" value="L"> Long Course</label>
 
 <br>
 
-<input type="submit" value="Show races" />
+<input type="submit" value="Apply filter" />
 
 </fieldset>
 </form>
@@ -113,6 +107,7 @@ legend {
 
 
 
+{% if selectedCourses is not defined or selectedCourses is none or "S" in selectedCourses %}
 <h3>Short Course PBs</h3>
 <table>
 
@@ -137,6 +132,7 @@ legend {
   {% endfor %} 
                                                                                                                               
 </table>
+{% endif %}
 
 
 
@@ -146,6 +142,7 @@ legend {
 
 
 
+{% if selectedCourses is not defined or selectedCourses is none or "L" in selectedCourses %}
 <h3>Long Course PBs</h3>
 <table>
   
@@ -170,6 +167,7 @@ legend {
   {% endfor %}
 
 </table>
+{% endif %}
 
 
 
@@ -303,6 +301,31 @@ legend {
 
 
 
+<br>
+<br>
+
+
+
+
+<form action="/addTarget" method="POST">
+  <fieldset>
+  <legend>Add a Target Time: </legend>
+  
+  <label for="target_comp">Choose a competition to become a target: </label>
+  <input list="target_comp" name="target_comp" id="targetComp">
+  <datalist id="target_comp">
+    <option value="S">
+    <option value="L">
+  </datalist>
+
+
+  </fieldset>
+  </form>
+
+
+
+
+
 
 
 
@@ -325,6 +348,7 @@ legend {
     <input type="submit" value="Log out" formaction="/logout" formmethod="POST" />
     <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST" />
     <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST" />
+    <a href="/dataAnalysis">Data Analysis</a>
 
 </form>
 

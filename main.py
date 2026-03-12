@@ -3,6 +3,7 @@ from genericpath import isfile
 from flask import Flask, redirect
 from blueprints.userManagement import userManagement_bp
 from blueprints.manualDataEntry import manualDataEntry_bp
+from blueprints.dataAnalysis import dataAnalysis_bp
 from database.database import createTables, populate_race_table
 
 
@@ -15,6 +16,7 @@ app.secret_key = "supersecretkey"  # Required for flashing messages to the user 
 # Register blueprints
 app.register_blueprint(userManagement_bp)                        
 app.register_blueprint(manualDataEntry_bp)
+app.register_blueprint(dataAnalysis_bp)
 
 # check if database tables exist and create if not
 if isfile("database/swimmer_info.db") == False:

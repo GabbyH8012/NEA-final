@@ -1,6 +1,6 @@
 #### imports ####
 from flask import Blueprint, request, render_template, flash, session
-from database.database import push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account_database, find_PBs
+from database.database import find_all_competitions, push_extracted_data, add_new_swimmer, check_existing_swimmer, check_login_credentials, get_user_info, delete_account_database, find_PBs
 from markupsafe import Markup 
 from dataScraping import fetch_data_login
 
@@ -8,6 +8,7 @@ from dataScraping import fetch_data_login
 
 # Create blueprint for user management fucntions
 userManagement_bp = Blueprint("userManagement", __name__, template_folder='../templates')
+
 
 
 # User login handler
@@ -47,18 +48,17 @@ def login():
                         push_extracted_data(swim[0], swim[1], swim[2], swim[3], swim[4])
 
 
-            # goals = load_goals(session["currentSwimmer_ID"])
-
 
             #finding PBs for the swimmer and rendering the home page with this data
             short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
         
 
     # or assuming first-time form visit - load login form
     else:
         return render_template('login.html')
     
+
 
 # createAccount handler
 # ---------------------
@@ -176,7 +176,7 @@ def createAccount():
 
 
                 short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
+                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
             else:
                 flash("Sign-up failed - please try again")
                 return render_template("createAccount.html")
@@ -190,12 +190,14 @@ def createAccount():
         return render_template("createAccount.html")
     
 
+
 # log out handler
 # ---------------
 @userManagement_bp.route("/logout", methods=['GET', 'POST'])
 def logout():   
     session.clear()
     return render_template("login.html")
+
 
 
 # delete account handler
@@ -205,6 +207,7 @@ def deleteAccount():
     delete_account_database()
     session.clear()
     return render_template("login.html")
+
 
 
 # refresh data collection handler
@@ -221,5 +224,22 @@ def refreshData():
     flash("Data refresh complete")
 
     short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+
+
+
+# link to home page
+# -------------------------------
+@userManagement_bp.route("/home", methods=['GET', 'POST'])
+def home():
+    short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+
+
+
+
+
+
+
+
 

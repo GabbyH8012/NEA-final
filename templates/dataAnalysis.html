@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Analysis</title>
+</head>
+
+<body>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+  </script>
+
+  <script>
+    var short_PBs = {{ short_PBs | tojson }};
+    var long_PBs = {{ long_PBs | tojson }};
+    var results = {{ results | tojson }};
+    var goals = {{ goals | tojson }};
+  </script>
+
+
+  <canvas id="shortCourseGoalProgressTracker" style="width:100%;max-width:1000px"></canvas>
+  <canvas id="longCourseGoalProgressTracker" style="width:100%;max-width:1000px"></canvas>
+
+  <div id="goalProgressTrackerBarCharts">
+    <script>
+
+
+      const shortEventsBar = [];
+      const shortDropPerLengthBar = [];
+      const shortBarColours = [];
+
+
+      for (let i = 0; i < short_PBs.length; i++) {
+        shortEventsBar.push(short_PBs[i][0]);
+
+        if (short_PBs[i][4] !== null) {
+          shortDropPerLengthBar.push(short_PBs[i][5]);
+          shortBarColours.push(short_PBs[i][5] < 0.5 ? [63, 127, 181, 0.2] : [0, 0, 0, 0.1]);
+        }
+      }
+
+
+
+      const shortBar = new Chart(document.getElementById("shortCourseGoalProgressTracker"), {
+        type: "bar",
+        data: {
+          labels: shortEventsBar,
+          datasets: [{
+            label: "Drop Per Length - Short Course",
+            data: shortDropPerLengthBar,
+            backgroundColor: shortBarColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, ${colour[3]})`),
+            borderColor: shortBarColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
+            borderWidth: 1,
+          }]
+        },
+      }
+      );
+
+
+      // if (shortDropPerLengthBar.length === 0) {
+      //   document.body.insertAdjacentHTML(
+      //     "beforeend",
+      //     "<p>No valid drop-per-length values found yet.</p>"
+      //   );
+      // }
+
+
+
+
+
+      const longEventsBar = [];
+      const longDropPerLengthBar = [];
+      const longBarColours = [];
+
+
+      for (let i = 0; i < long_PBs.length; i++) {
+        longEventsBar.push(long_PBs[i][0]);
+
+        if (long_PBs[i][4] !== null) {
+          longDropPerLengthBar.push(long_PBs[i][5]);
+          longBarColours.push(long_PBs[i][5] < 1 ? [63, 127, 181, 0.2] : [0, 0, 0, 0.1]);
+        }
+      }
+
+
+
+
+      const longBar = new Chart(document.getElementById("longCourseGoalProgressTracker"), {
+        type: "bar",
+        data: {
+          labels: longEventsBar,
+          datasets: [{
+            label: "Drop Per Length - Long Course",
+            data: longDropPerLengthBar,
+            backgroundColor: longBarColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, ${colour[3]})`),
+            borderColor: longBarColours.map(colour => `rgb(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
+            borderWidth: 1,
+          }]
+        },
+      }
+      );
+
+    </script>
+  </div>
+
+  <br><br>
+
+
+
+
+
+
+
+
+
+
+
+  <canvas id="shortCourseEventProgression" style="width:100%;max-width:1000px"></canvas>
+
+  <div id="eventProgressionLineGraphs">
+    <script>
+
+      const shortEventsLine = [];
+      const shortResultsLine = [];
+      const shortDateLine = [];
+      const shortPointColours = [];
+      const goalConnectorData = [];
+
+
+      const results50FlyShort = results[0]
+      const goal = goals[0]
+
+
+      for (let i = 0; i < results50FlyShort.length; i++) {
+        shortDateLine.push(results50FlyShort[i][1]);
+        shortResultsLine.push(results50FlyShort[i][0]);
+      }
+
+
+
+      function colourPBs() {
+
+        if (shortResultsLine.length === 0) {
+          return;
+        }
+
+        let currentPB = shortResultsLine[0];
+
+        for (let i = 0; i < shortResultsLine.length; i++) {
+          if (shortResultsLine[i] < currentPB) {
+            currentPB = shortResultsLine[i];
+            shortPointColours.push([63, 127, 181]);
+          } else {
+            shortPointColours.push([0, 0, 0]);
+
+          }
+        }}
+
+
+
+      colourPBs();
+
+      if (goal !== null && shortResultsLine.length > 0) {
+        shortDateLine.push("Goal");
+        shortResultsLine.push(goal);
+        shortPointColours.push([106, 173, 125]);
+
+        for (let i = 0; i < shortResultsLine.length; i++) {
+          goalConnectorData.push(null);
+        }
+
+        goalConnectorData[shortResultsLine.length - 2] = shortResultsLine[shortResultsLine.length - 2];
+        goalConnectorData[shortResultsLine.length - 1] = shortResultsLine[shortResultsLine.length - 1];
+      }
+
+      const shortLine = new Chart(document.getElementById("shortCourseEventProgression"), {
+        type: "line",
+        data: {
+          labels: shortDateLine,
+          datasets: [{
+            label: "Result",
+            data: shortResultsLine,
+            backgroundColor: shortPointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.8)`),
+            fill: false,
+            borderColor: shortPointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
+            borderWidth: 1,
+            tension: 0.3,
+            pointRadius: 3.5,
+          }, {
+            label: "Goal",
+            data: goalConnectorData,
+            fill: false,
+            borderColor: "rgba(106, 173, 125, 0.9)",
+            borderWidth: 1,
+            // borderDash: [6, 6],
+            tension: 0.3,
+            pointRadius: 0,
+          }]
+        },
+      }
+      );
+
+
+    </script>
+  </div>
+
+  <br>
+
+
+
+
+
+
+
+
+
+
+
+  <a href="/home">Home</a>
+
+
+
+</body>
+
+</html>

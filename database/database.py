@@ -271,8 +271,9 @@ def push_extracted_data(race_ID: int, comp_name: str, date: str, final_time: str
             cursor.execute("INSERT INTO result (rankings_ID, race_ID, comp_name, date, final_time) VALUES (?, ?, ?, ?, ?)", (session['currentSwimmer_ID'], race_ID, comp_name, date, final_time))
 
 
-    return True
-
+    results = []
+    results.append((race_ID, final_time, date))
+    return results
 
 
 #Database access function to find PBs for a swimmer given their rankings_ID
@@ -488,12 +489,59 @@ def num_lengths(race_ID):
         
 
 
+# Database access function to find all competitions in the database
+# -----------------------------------------------------------------
+def find_all_competitions():
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT comp_name, date
+                        FROM competition""")
+        result = cursor.fetchall()
+
+        if result != None:
+            return result
+        else:
+            return None
 
 
 
+def find_all_results_and_goal_from_ID(race_ID):
+    with sqlite3.connect(db_name) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT final_time, date
+                        FROM result
+                        WHERE rankings_ID = ? AND race_ID = ? """ , (str(session['currentSwimmer_ID']), str(race_ID)))
+        result = cursor.fetchall()
 
 
+        result = sorted(
+            result,
+            key=lambda row: datetime.strptime(row[1], "%d/%m/%y") if row[1] else datetime.max,
+        )
 
+        resultList = [list(row) for row in result]
+
+        for i in range(len(resultList)):
+            splitTime = resultList[i][0].split(":");
+            time = float(splitTime[0]) * 60 + float(splitTime[1])
+            resultList[i][0] = time
+
+
+        cursor.execute("""SELECT goal_time
+                        FROM goal
+                        WHERE rankings_ID = ? AND race_ID = ? """ , (str(session['currentSwimmer_ID']), str(race_ID)))
+        goal = cursor.fetchone()
+
+        goalTime = None
+        if goal is not None and goal[0] is not None:
+            splitGoal = goal[0].split(":")
+            goalTime = float(splitGoal[0]) * 60 + float(splitGoal[1])
+
+
+        if resultList != None:
+            return resultList, goalTime
+        else:
+            return None, goalTime
 
 
 
