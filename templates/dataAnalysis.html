@@ -18,6 +18,9 @@
     var long_PBs = {{ long_PBs | tojson }};
     var results = {{ results | tojson }};
     var goals = {{ goals | tojson }};
+    var line_race_ID = {{ line_race_ID | tojson }};
+    var line_raceName = {{ raceName | tojson }};
+    var line_course = {{ line_course | tojson }};
   </script>
 
 
@@ -106,7 +109,7 @@
     </script>
   </div>
 
-  <br><br>
+  <br><br><br><br>
 
 
 
@@ -114,9 +117,60 @@
 
 
 
+<div>
+    <form action="/chooseDisplayedEvent_Line" method="POST">
+      <fieldset>
+      <legend>Change event displayed below: </legend>
+
+  <label for="race_ID">Choose an event:</label>
+  <select id="race_ID" name="race_ID">
+    <option value="1">50 Freestyle</option>
+    <option value="2">100 Freestyle</option>
+    <option value="3">200 Freestyle</option>
+    <option value="4">400 Freestyle</option>
+    <option value="5">800 Freestyle</option>
+    <option value="6">1500 Freestyle</option>
+    <option value="7">50 Breaststroke</option>
+    <option value="8">100 Breaststroke</option>
+    <option value="9">200 Breaststroke</option>
+    <option value="10">50 Butterfly</option>
+    <option value="11">100 Butterfly</option>
+    <option value="12">200 Butterfly</option>
+    <option value="13">50 Backstroke</option>
+    <option value="14">100 Backstroke</option>
+    <option value="15">200 Backstroke</option>
+    <option value="16">200 IM</option>
+    <option value="17">400 IM</option>
+    <option value="18">100 IM</option>
+  </select>
+
+<br>
+
+  <label for="course">Choose a course:</label>
+  <select id="course" name="course">
+    <option value="S">Short Course</option>
+    <option value="L">Long Course</option>
+  </select>
+
+<br>
+
+<input type="submit" value="Change Event" />
+
+</fieldset> 
+</form> 
+</div>
 
 
 
+<br><br>
+
+
+
+
+<script>
+  document.write("<h3>Event Progression for: " + line_raceName + " (" + line_course + ")</h3>");
+  console.log(line_raceName, line_course);
+</script>
 
   <canvas id="shortCourseEventProgression" style="width:100%;max-width:1000px"></canvas>
 
@@ -127,11 +181,14 @@
       const shortResultsLine = [];
       const shortDateLine = [];
       const shortPointColours = [];
-      const goalConnectorData = [];
 
+      const goalList = [];
 
-      const results50FlyShort = results[0]
-      const goal = goals[0]
+      if (line_race_ID === null) {
+        line_race_ID = 1;
+      }
+      const results50FlyShort = results[line_race_ID - 1];
+      const goal = goals[line_race_ID - 1];
 
 
       for (let i = 0; i < results50FlyShort.length; i++) {
@@ -139,6 +196,9 @@
         shortResultsLine.push(results50FlyShort[i][0]);
       }
 
+      if (shortResultsLine.length === 0) {
+        document.write("<p>You don't have any times for this event yet!</p>");
+      }
 
 
       function colourPBs() {
@@ -155,7 +215,6 @@
             shortPointColours.push([63, 127, 181]);
           } else {
             shortPointColours.push([0, 0, 0]);
-
           }
         }}
 
@@ -163,18 +222,21 @@
 
       colourPBs();
 
+
+
       if (goal !== null && shortResultsLine.length > 0) {
         shortDateLine.push("Goal");
-        shortResultsLine.push(goal);
-        shortPointColours.push([106, 173, 125]);
-
-        for (let i = 0; i < shortResultsLine.length; i++) {
-          goalConnectorData.push(null);
+        for (let i = 0; i < (shortResultsLine.length - 1); i++) {
+          goalList.push(null);
         }
-
-        goalConnectorData[shortResultsLine.length - 2] = shortResultsLine[shortResultsLine.length - 2];
-        goalConnectorData[shortResultsLine.length - 1] = shortResultsLine[shortResultsLine.length - 1];
+        goalList.push(shortResultsLine[shortResultsLine.length - 1]);
+        goalList.push(goal);
       }
+
+
+
+
+
 
       const shortLine = new Chart(document.getElementById("shortCourseEventProgression"), {
         type: "line",
@@ -187,20 +249,26 @@
             fill: false,
             borderColor: shortPointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
             borderWidth: 1,
-            tension: 0.3,
+            tension: 0.2,
             pointRadius: 3.5,
           }, {
             label: "Goal",
-            data: goalConnectorData,
-            fill: false,
+            data: goalList,
             borderColor: "rgba(106, 173, 125, 0.9)",
+            backgroundColor: "rgba(106, 173, 125, 0.9)",
+            fill: false,
             borderWidth: 1,
-            // borderDash: [6, 6],
-            tension: 0.3,
-            pointRadius: 0,
-          }]
-        },
-      }
+            borderDash: [4, 3],
+            tension: 0.2,
+            pointRadius: 4,
+          }, {
+            label: "Personal Bests",
+            borderColor: "rgba(63, 127, 181, 1)",
+            borderWidth: 1,
+            backgroundColor: "rgba(63, 127, 181, 0.5)",
+          },
+        ],
+      }}
       );
 
 
