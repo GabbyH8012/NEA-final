@@ -24,7 +24,7 @@ def data_analysis():
         results.append(race_results)
         goals.append(race_goal)
 
-    return render_template("dataAnalysis.html", short_PBs=short_PBs, long_PBs=long_PBs, course=course, results=results, goals=goals, line_race_ID=1, raceName="50 Freestyle", line_course="Short course")
+    return render_template("dataAnalysis.html", short_PBs=short_PBs, long_PBs=long_PBs, course=course, results=results, goals=goals, race_ID_line=1, raceName_line="50 Freestyle", course_line="Short course", race_ID_scatter=1, raceName_scatter="50 Freestyle", course_scatter="Short course")
 
 
 
@@ -55,5 +55,35 @@ def choose_displayed_event_line():
         results.append(race_results)
         goals.append(race_goal)
 
-    return render_template("dataAnalysis.html", short_PBs=short_PBs, long_PBs=long_PBs, course=course, results=results, goals=goals, line_race_ID=line_race_ID, raceName=raceName, line_course=line_course)
+    return render_template("dataAnalysis.html", short_PBs=short_PBs, long_PBs=long_PBs, course=course, results=results, goals=goals, race_ID_line=line_race_ID, raceName_line=raceName, course_line=line_course, race_ID_scatter=1, raceName_scatter="50 Freestyle", course_scatter="Short course")
 
+
+
+# Filter Scatter graph event handler
+# ----------------------------------
+@dataAnalysis_bp.route("/chooseDisplayedEvent_Scatter", methods=['GET', 'POST'])
+def choose_displayed_event_scatter():
+        
+    scatter_race_ID = int(request.form.get('Scatter_race_ID'))
+    scatter_course = str(request.form.get('Scatter_course'))
+
+    if scatter_course == "L":
+        scatter_race_ID = scatter_race_ID + 18
+        scatter_course = "Long course"
+    else:        
+        scatter_course = "Short course"
+
+    raceName = find_race_from_ID(scatter_race_ID)
+
+
+    course = ["short", "long"]
+    short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
+
+    results = []
+    goals = []
+    for i in range(1,36):
+        race_results, race_goal = find_all_results_and_goal_from_ID(i)
+        results.append(race_results)
+        goals.append(race_goal)
+
+    return render_template("dataAnalysis.html", short_PBs=short_PBs, long_PBs=long_PBs, course=course, results=results, goals=goals, race_ID_scatter=scatter_race_ID, raceName_scatter=raceName, course_scatter=scatter_course, race_ID_line=1, raceName_line="50 Freestyle", course_line="Short course")

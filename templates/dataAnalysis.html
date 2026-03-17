@@ -10,17 +10,20 @@
 <body>
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
   <script>
     var short_PBs = {{ short_PBs | tojson }};
     var long_PBs = {{ long_PBs | tojson }};
     var results = {{ results | tojson }};
     var goals = {{ goals | tojson }};
-    var line_race_ID = {{ line_race_ID | tojson }};
-    var line_raceName = {{ raceName | tojson }};
-    var line_course = {{ line_course | tojson }};
+    var race_ID_line = {{ race_ID_line | tojson }};
+    var raceName_line = {{ raceName_line | tojson }};
+    var course_line = {{ course_line | tojson }};
+    var race_ID_scatter = {{ race_ID_scatter | tojson }};
+    var raceName_scatter = {{ raceName_scatter | tojson }};
+    var course_scatter = {{ course_scatter | tojson }};
   </script>
 
 
@@ -99,7 +102,7 @@
             label: "Drop Per Length - Long Course",
             data: longDropPerLengthBar,
             backgroundColor: longBarColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, ${colour[3]})`),
-            borderColor: longBarColours.map(colour => `rgb(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
+            borderColor: longBarColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
             borderWidth: 1,
           }]
         },
@@ -117,106 +120,106 @@
 
 
 
-<div>
+  <div>
     <form action="/chooseDisplayedEvent_Line" method="POST">
       <fieldset>
-      <legend>Change event displayed below: </legend>
+        <legend>Change event displayed below: </legend>
 
-  <label for="race_ID">Choose an event:</label>
-  <select id="race_ID" name="race_ID">
-    <option value="1">50 Freestyle</option>
-    <option value="2">100 Freestyle</option>
-    <option value="3">200 Freestyle</option>
-    <option value="4">400 Freestyle</option>
-    <option value="5">800 Freestyle</option>
-    <option value="6">1500 Freestyle</option>
-    <option value="7">50 Breaststroke</option>
-    <option value="8">100 Breaststroke</option>
-    <option value="9">200 Breaststroke</option>
-    <option value="10">50 Butterfly</option>
-    <option value="11">100 Butterfly</option>
-    <option value="12">200 Butterfly</option>
-    <option value="13">50 Backstroke</option>
-    <option value="14">100 Backstroke</option>
-    <option value="15">200 Backstroke</option>
-    <option value="16">200 IM</option>
-    <option value="17">400 IM</option>
-    <option value="18">100 IM</option>
-  </select>
+        <label for="race_ID">Choose an event:</label>
+        <select id="race_ID" name="race_ID">
+          <option value="1">50 Freestyle</option>
+          <option value="2">100 Freestyle</option>
+          <option value="3">200 Freestyle</option>
+          <option value="4">400 Freestyle</option>
+          <option value="5">800 Freestyle</option>
+          <option value="6">1500 Freestyle</option>
+          <option value="7">50 Breaststroke</option>
+          <option value="8">100 Breaststroke</option>
+          <option value="9">200 Breaststroke</option>
+          <option value="10">50 Butterfly</option>
+          <option value="11">100 Butterfly</option>
+          <option value="12">200 Butterfly</option>
+          <option value="13">50 Backstroke</option>
+          <option value="14">100 Backstroke</option>
+          <option value="15">200 Backstroke</option>
+          <option value="16">200 IM</option>
+          <option value="17">400 IM</option>
+          <option value="18">100 IM</option>
+        </select>
 
-<br>
+        <br>
 
-  <label for="course">Choose a course:</label>
-  <select id="course" name="course">
-    <option value="S">Short Course</option>
-    <option value="L">Long Course</option>
-  </select>
+        <label for="course">Choose a course:</label>
+        <select id="course" name="course">
+          <option value="S">Short Course</option>
+          <option value="L">Long Course</option>
+        </select>
 
-<br>
+        <br>
 
-<input type="submit" value="Change Event" />
+        <input type="submit" value="Change Event" />
 
-</fieldset> 
-</form> 
-</div>
-
-
-
-<br><br>
+      </fieldset>
+    </form>
+  </div>
 
 
 
+  <br><br>
 
-<script>
-  document.write("<h3>Event Progression for: " + line_raceName + " (" + line_course + ")</h3>");
-  console.log(line_raceName, line_course);
-</script>
+
+
+
+  <script>
+    document.write("<h3>Event Progression for: " + raceName_line + " (" + course_line + ")</h3>");
+  </script>
 
   <canvas id="shortCourseEventProgression" style="width:100%;max-width:1000px"></canvas>
 
   <div id="eventProgressionLineGraphs">
     <script>
 
-      const shortEventsLine = [];
-      const shortResultsLine = [];
-      const shortDateLine = [];
-      const shortPointColours = [];
+      const resultsLine = [];
+      const dateLine = [];
+      const resultPoints = [];
+      const pointColours = [];
 
       const goalList = [];
 
-      if (line_race_ID === null) {
-        line_race_ID = 1;
+      if (race_ID_line === null) {
+        race_ID_line = 1;
       }
-      const results50FlyShort = results[line_race_ID - 1];
-      const goal = goals[line_race_ID - 1];
+      const allResults = results[race_ID_line - 1];
+      const goal = goals[race_ID_line - 1];
 
 
-      for (let i = 0; i < results50FlyShort.length; i++) {
-        shortDateLine.push(results50FlyShort[i][1]);
-        shortResultsLine.push(results50FlyShort[i][0]);
+      for (let i = 0; i < allResults.length; i++) {
+        dateLine.push(allResults[i][1]);
+        resultsLine.push(allResults[i][0]);
       }
 
-      if (shortResultsLine.length === 0) {
+      if (resultsLine.length === 0) {
         document.write("<p>You don't have any times for this event yet!</p>");
       }
 
 
       function colourPBs() {
 
-        if (shortResultsLine.length === 0) {
+        if (resultsLine.length === 0) {
           return;
         }
 
-        let currentPB = shortResultsLine[0];
+        let currentPB = resultsLine[0];
 
-        for (let i = 0; i < shortResultsLine.length; i++) {
-          if (shortResultsLine[i] < currentPB) {
-            currentPB = shortResultsLine[i];
-            shortPointColours.push([63, 127, 181]);
+        for (let i = 0; i < resultsLine.length; i++) {
+          if (resultsLine[i] < currentPB) {
+            currentPB = resultsLine[i];
+            pointColours.push([63, 127, 181]);
           } else {
-            shortPointColours.push([0, 0, 0]);
+            pointColours.push([0, 0, 0]);
           }
-        }}
+        }
+      }
 
 
 
@@ -224,16 +227,14 @@
 
 
 
-      if (goal !== null && shortResultsLine.length > 0) {
-        shortDateLine.push("Goal");
-        for (let i = 0; i < (shortResultsLine.length - 1); i++) {
+      if (goal !== null && resultsLine.length > 0) {
+        dateLine.push("Goal");
+        for (let i = 0; i < (resultsLine.length - 1); i++) {
           goalList.push(null);
         }
-        goalList.push(shortResultsLine[shortResultsLine.length - 1]);
+        goalList.push(resultsLine[resultsLine.length - 1]);
         goalList.push(goal);
       }
-
-
 
 
 
@@ -241,13 +242,13 @@
       const shortLine = new Chart(document.getElementById("shortCourseEventProgression"), {
         type: "line",
         data: {
-          labels: shortDateLine,
+          labels: dateLine,
           datasets: [{
             label: "Result",
-            data: shortResultsLine,
-            backgroundColor: shortPointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.8)`),
+            data: resultsLine,
+            backgroundColor: pointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.8)`),
             fill: false,
-            borderColor: shortPointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
+            borderColor: pointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
             borderWidth: 1,
             tension: 0.2,
             pointRadius: 3.5,
@@ -267,20 +268,163 @@
             borderWidth: 1,
             backgroundColor: "rgba(63, 127, 181, 0.5)",
           },
-        ],
-      }}
+          ],
+        }
+      }
       );
 
 
     </script>
   </div>
 
-  <br>
+  <br><br><br><br>
 
 
 
 
 
+
+
+
+
+
+
+  <div>
+    <form action="/chooseDisplayedEvent_Scatter" method="POST">
+      <fieldset>
+        <legend>Change event displayed below: </legend>
+
+        <label for="Scatter_race_ID">Choose an event:</label>
+        <select id="Scatter_race_ID" name="Scatter_race_ID">
+          <option value="1">50 Freestyle</option>
+          <option value="2">100 Freestyle</option>
+          <option value="3">200 Freestyle</option>
+          <option value="4">400 Freestyle</option>
+          <option value="5">800 Freestyle</option>
+          <option value="6">1500 Freestyle</option>
+          <option value="7">50 Breaststroke</option>
+          <option value="8">100 Breaststroke</option>
+          <option value="9">200 Breaststroke</option>
+          <option value="10">50 Butterfly</option>
+          <option value="11">100 Butterfly</option>
+          <option value="12">200 Butterfly</option>
+          <option value="13">50 Backstroke</option>
+          <option value="14">100 Backstroke</option>
+          <option value="15">200 Backstroke</option>
+          <option value="16">200 IM</option>
+          <option value="17">400 IM</option>
+          <option value="18">100 IM</option>
+        </select>
+
+        <br>
+
+        <label for="Scatter_course">Choose a course:</label>
+        <select id="Scatter_course" name="Scatter_course">
+          <option value="S">Short Course</option>
+          <option value="L">Long Course</option>
+        </select>
+
+        <br>
+
+        <input type="submit" value="Change Event" />
+
+      </fieldset>
+    </form>
+</div>
+
+
+
+
+  <br><br>
+
+  <script>
+    document.write("<h3>Event Progression for: " + raceName_scatter + " (" + course_scatter + ")</h3>");
+  </script>
+
+
+
+  <canvas id="goalPredictionScatter" style="width:100%;max-width:1000px"></canvas>
+
+  <div id="scatterGraphs">
+    <script>
+
+      const resultsScatter = [];
+      const dateScatter = [];
+
+      const allResults_scatter = results[race_ID_scatter - 1] || [];
+      const goalScatter = goals[race_ID_scatter - 1];
+      const minyAxis = (goalScatter - 5);
+
+
+      for (let i = 0; i < allResults_scatter.length; i++) {
+        dateScatter.push(allResults_scatter[i][1]);
+        resultsScatter.push(allResults_scatter[i][0]);
+      }
+
+
+      if (resultsScatter.length === 0) {
+        document.write("<p>You don't have any times for this event yet!</p>");
+      }
+
+
+      const goalDates = [dateScatter[0], moment(dateScatter[dateScatter.length - 1], "DD/MM/YY").add(1, "year").format("DD/MM/YY")];
+      const goalTimes = [goalScatter, goalScatter];
+
+
+
+
+
+      const scatter = new Chart(document.getElementById("goalPredictionScatter"), {
+        type: "line",
+        data: {
+          datasets: [{
+            label: "Result",
+            data: dateScatter.map((date, index) => ({ x: date, y: resultsScatter[index] })),
+            backgroundColor: "rgba(63, 127, 181, 0.8)",
+            fill: false,
+            borderWidth: 0,
+            borderColor: "rgba(225, 225, 225, 0)",
+            pointRadius: 3.5,
+          }, {
+            label: "Goal",
+            data: goalDates.map((date, index) => ({ x: date, y: goalTimes[index] })),
+            backgroundColor: "rgba(106, 173, 125, 0.9)",
+            fill: false,
+            borderWidth: 1,
+            borderColor: "rgba(106, 173, 125, 0.9)",
+            pointRadius: 0,
+          }
+          ],
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                min: minyAxis,
+              }
+            }],
+            xAxes: [{
+              type: "time",
+              distribution: "linear",
+              time: {
+                parser: "DD/MM/YY",
+                unit: "month",
+                stepSize: 1,
+                displayFormats: {
+                  month: "MMM YYYY"
+                },
+                tooltipFormat: "DD/MM/YY"
+              },
+            }]
+          }
+        }
+      }
+      );
+
+
+
+    </script>
+  </div>
 
 
 
