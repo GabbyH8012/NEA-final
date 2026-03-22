@@ -40,11 +40,11 @@ def addSwim():
         add_swim_to_database(race_ID, comp_name, date, final_time, goal_time)
     
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
     else:
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
 
 
@@ -72,7 +72,7 @@ def addGoal():
 
 
         short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
     
 
 
@@ -89,7 +89,7 @@ def filter():
     # show all rows if no race or course is selected
     if race_IDs == [] and courses == []:
         flash("No filters selected. Showing all PBs")
-        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+        return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
     if courses != []:
         selected_courses = courses
@@ -115,7 +115,7 @@ def filter():
                 selected_race_names.append(find_race_from_ID(int(race_id) + 18))
 
 
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=selected_race_names, selectedCourses=selected_courses)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=selected_race_names, selectedCourses=selected_courses, name=session['currentSwimmer_name'])
 
 
 
@@ -131,6 +131,6 @@ def addTargetComp():
 
 
     short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
 

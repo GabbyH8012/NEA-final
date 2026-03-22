@@ -2,160 +2,119 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>'Project Name' - Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+  <title>RacePace - Home</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
 </head>
 
 <body>
 
 
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <p>{{ message }}</p>
-    {% endfor %}
-    <hr>
-    {% endif %}
-    {% endwith %}
+  <script>
+      const messages = {{ get_flashed_messages() | tojson }};
+      if (messages.length > 0) {
+      window.FlashMessage.info(messages, {
+          timeout: 3000,
+          progress: true,
+          interactive: true,
+      });
+      }
+  </script>
 
 
 
-    <h1>Home</h1>
-    <br>
-    <br>
+<div class="header">
+  <p id="name">{{ name }}</p>
+  <img src="{{ url_for('static', filename='images/logoName.png') }}" id="logoName" alt="Race Pace"> 
+  <a href="/dataAnalysis"><img src="{{ url_for('static', filename='images/graph.png') }}" alt="Data Analysis" id="graph"></a>
+
+</div>
 
 
 
-
-<style>
-
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 80%;
-}
-
-th, td {
-  border:1px solid black;
-}
-
-legend {
-  font-size: 1.5em;;
-}
-
-</style>
-
-
-
-
-
-
-
-
-<form action="/filter" method="POST">
-    <fieldset>
-    <legend>Filter: </legend>
-
-  <p>Filter races:</p>
-  <label><input type="checkbox" name="filter_race" value="1"> 50 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="2"> 100 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="3"> 200 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="4"> 400 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="5"> 800 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="6"> 1500 Freestyle</label><br>
-  <label><input type="checkbox" name="filter_race" value="7"> 50 Breaststroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="8"> 100 Breaststroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="9"> 200 Breaststroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="10"> 50 Butterfly</label><br>
-  <label><input type="checkbox" name="filter_race" value="11"> 100 Butterfly</label><br>
-  <label><input type="checkbox" name="filter_race" value="12"> 200 Butterfly</label><br>
-  <label><input type="checkbox" name="filter_race" value="13"> 50 Backstroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="14"> 100 Backstroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="15"> 200 Backstroke</label><br>
-  <label><input type="checkbox" name="filter_race" value="16"> 200 IM</label><br>
-  <label><input type="checkbox" name="filter_race" value="17"> 400 IM</label><br>
-  <label><input type="checkbox" name="filter_race" value="18"> 100 IM</label>
-
-<br>
-
-  <p>Filter courses:</p>
-  <label><input type="checkbox" name="filter_course" value="S"> Short Course</label><br>
-  <label><input type="checkbox" name="filter_course" value="L"> Long Course</label>
-
-<br>
-
-<input type="submit" value="Apply filter" />
-
-</fieldset>
-</form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% if selectedCourses is not defined or selectedCourses is none or "S" in selectedCourses %}
-<h3>Short Course PBs</h3>
-<table>
-
-  <tr style="font-weight: bold;">
-    <th>Race</th>
-    <th>PB</th>
-    <th>Date</th>
-    <th>Goal Time</th>
-    <th>Time to Drop</th>
-    <th>Time to Drop - Per length</th>
-    </tr>
-                                          
-  {% for swim in short_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in selectedRaceNames %}
-    <tr style="font-size: 0.85em; font-weight: Thin;">
-    <td style="text-align: left;">{{ swim[0] }}</td>
-    <td style="text-align: left;">{{ swim[1] }}</td>
-    <td style="text-align: center;">{{ swim[2] }}</td>
-    <td style="text-align: center;">{{ swim[3] if swim[3] is not none else '-' }}</td>
-    <td style="text-align: center;">{{ swim[4] if swim[4] is not none else '-' }}</td>
-    <td style="text-align: center;">{{ swim[5] if swim[5] is not none else '-' }}</td>
-    </tr>
-  {% endfor %} 
-                                                                                                                              
-</table>
-{% endif %}
-
-
-
-
-<br>
-
-
-
-
-{% if selectedCourses is not defined or selectedCourses is none or "L" in selectedCourses %}
-<h3>Long Course PBs</h3>
-<table>
+ 
   
-  <tr style="font-weight: bold;">
-    <th>Race</th>
-    <th>PB</th>
-    <th>Date</th>
-    <th>Goal Time</th>
-    <th>Time to Drop</th>
-    <th>Time to Drop - Per length</th>
-  </tr>
+  <br>
+  <br>
 
-  {% for swim in long_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in selectedRaceNames %}
+
+
+
+  <div class="main">
+
+  <form action="/filter" method="POST" id="filterForm">
+
+      <h3>Filter:</h3>
+      <br>
+      <h4>Filter Races:</h4>
+      <label><input type="checkbox" name="filter_race" value="1"> 50 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="2"> 100 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="3"> 200 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="4"> 400 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="5"> 800 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="6"> 1500 Freestyle</label><br>
+      <label><input type="checkbox" name="filter_race" value="7"> 50 Breaststroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="8"> 100 Breaststroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="9"> 200 Breaststroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="10"> 50 Butterfly</label><br>
+      <label><input type="checkbox" name="filter_race" value="11"> 100 Butterfly</label><br>
+      <label><input type="checkbox" name="filter_race" value="12"> 200 Butterfly</label><br>
+      <label><input type="checkbox" name="filter_race" value="13"> 50 Backstroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="14"> 100 Backstroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="15"> 200 Backstroke</label><br>
+      <label><input type="checkbox" name="filter_race" value="16"> 200 IM</label><br>
+      <label><input type="checkbox" name="filter_race" value="17"> 400 IM</label><br>
+      <label><input type="checkbox" name="filter_race" value="18"> 100 IM</label>
+
+      <br>
+      <br>
+
+      <h4>Filter courses:</h4>
+      <label><input type="checkbox" name="filter_course" value="S"> Short Course</label><br>
+      <label><input type="checkbox" name="filter_course" value="L"> Long Course</label>
+
+      <br>
+      <br>
+      <br>
+
+      <input type="submit" value="Apply filter" id="filterSubmit"/>
+
+  </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="tables">
+
+  {% if selectedCourses is not defined or selectedCourses is none or "S" in selectedCourses %}
+  <h3>Short Course PBs:</h3>
+  <table>
+
+    <tr class="tableHeader">
+      <th>Race</th>
+      <th>PB</th>
+      <th>Date</th>
+      <th>Goal Time</th>
+      <th>Time to Drop</th>
+      <th>Time to Drop - Per length</th>
+    </tr>
+
+    {% for swim in short_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in
+    selectedRaceNames %}
     <tr style="font-size: 0.85em; font-weight: Thin;">
       <td style="text-align: left;">{{ swim[0] }}</td>
       <td style="text-align: left;">{{ swim[1] }}</td>
@@ -164,154 +123,177 @@ legend {
       <td style="text-align: center;">{{ swim[4] if swim[4] is not none else '-' }}</td>
       <td style="text-align: center;">{{ swim[5] if swim[5] is not none else '-' }}</td>
     </tr>
-  {% endfor %}
+    {% endfor %}
 
-</table>
-{% endif %}
-
-
-
-
-<br>
-<br>
-
-
-
-
-
-<form action="/addSwim" method="POST">
-    <fieldset>
-    <legend>Add a Swim: </legend>
-
-    <label for="race_ID">Choose an event:</label>
-  <select id="race_ID" name="race_ID">
-    <option value="1">50 Freestyle</option>
-    <option value="2">100 Freestyle</option>
-    <option value="3">200 Freestyle</option>
-    <option value="4">400 Freestyle</option>
-    <option value="5">800 Freestyle</option>
-    <option value="6">1500 Freestyle</option>
-    <option value="7">50 Breaststroke</option>
-    <option value="8">100 Breaststroke</option>
-    <option value="9">200 Breaststroke</option>
-    <option value="10">50 Butterfly</option>
-    <option value="11">100 Butterfly</option>
-    <option value="12">200 Butterfly</option>
-    <option value="13">50 Backstroke</option>
-    <option value="14">100 Backstroke</option>
-    <option value="15">200 Backstroke</option>
-    <option value="16">200 IM</option>
-    <option value="17">400 IM</option>
-    <option value="18">100 IM</option>
-  </select>
-
-<br>
-
-  <label for="course">Choose a course:</label>
-  <select id="course" name="course">
-    <option value="S">Short Course</option>
-    <option value="L">Long Course</option>
-  </select>
-
-<br>
-
-<label for="comp_name"> Competition Name: </label>
-<input name="comp_name" id="comp_name" type="text"/>
-
-<br>
-
-<label for="date">Date of swim:</label>
-<input name="date" id="date" type="date">
-
-<br>
-
-<label for="final_time">Time:</label>
-<input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
-
-<br>
-
-<label for="goal_time">Goal Time:</label>
-<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh - optional" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
-
-<br>
-
-<input type="submit" value="Add Swim" />
-
-</fieldset>
-</form>
-
-
-
-
-
-<br>
-<br>
-<br>
-
-
-
-
-
-<form action="/addGoal" method="POST">
-  <fieldset>
-  <legend>Add a Goal Time: </legend>
-
-  <label for="race_ID">Choose an event:</label>
-  <select id="race_ID" name="race_ID">
-    <option value="1">50 Freestyle</option>
-    <option value="2">100 Freestyle</option>
-    <option value="3">200 Freestyle</option>
-    <option value="4">400 Freestyle</option>
-    <option value="5">800 Freestyle</option>
-    <option value="6">1500 Freestyle</option>
-    <option value="7">50 Breaststroke</option>
-    <option value="8">100 Breaststroke</option>
-    <option value="9">200 Breaststroke</option>
-    <option value="10">50 Butterfly</option>
-    <option value="11">100 Butterfly</option>
-    <option value="12">200 Butterfly</option>
-    <option value="13">50 Backstroke</option>
-    <option value="14">100 Backstroke</option>
-    <option value="15">200 Backstroke</option>
-    <option value="16">200 IM</option>
-    <option value="17">400 IM</option>
-    <option value="18">100 IM</option>
-  </select>
-
-<br>
-
-  <label for="course">Choose a course:</label>
-  <select id="course" name="course">
-    <option value="S">Short Course</option>
-    <option value="L">Long Course</option>
-  </select>
-
-<br>
-
-<label for="goal_time"> Goal Time: </label>
-<input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}">
-
-<br>
-
-<input type="submit" value="Add Goal" />
-
-</fieldset>
-</form>
+  </table>
+  {% endif %}
 
 
 
 
 
 
+  <br>
 
 
 
 
-<br>
-<br>
-<br>
-<br>
-<br>
+  {% if selectedCourses is not defined or selectedCourses is none or "L" in selectedCourses %}
+  <h3>Long Course PBs:</h3>
+  <table>
+
+    <tr class="tableHeader">
+      <th>Race</th>
+      <th>PB</th>
+      <th>Date</th>
+      <th>Goal Time</th>
+      <th>Time to Drop</th>
+      <th>Time to Drop - Per length</th>
+    </tr>
+
+    {% for swim in long_PBs if selectedRaceNames is not defined or selectedRaceNames is none or swim[0] in
+    selectedRaceNames %}
+    <tr style="font-size: 0.85em; font-weight: Thin;">
+      <td style="text-align: left;">{{ swim[0] }}</td>
+      <td style="text-align: left;">{{ swim[1] }}</td>
+      <td style="text-align: center;">{{ swim[2] }}</td>
+      <td style="text-align: center;">{{ swim[3] if swim[3] is not none else '-' }}</td>
+      <td style="text-align: center;">{{ swim[4] if swim[4] is not none else '-' }}</td>
+      <td style="text-align: center;">{{ swim[5] if swim[5] is not none else '-' }}</td>
+    </tr>
+    {% endfor %}
+
+  </table>
+  {% endif %}
+
+</div>
+</div>
+
+
+
+  <br>
+  <br>
+
+
+
+<div class="addFormsContainer">
+<div class="addForms">
+
+  <form action="/addSwim" method="POST">
+      <h3>Add a Swim: </h3>
+
+      <label for="race_ID">Choose an event:</label>
+      <select id="race_ID" name="race_ID" class="inputField">
+        <option value="1">50 Freestyle</option>
+        <option value="2">100 Freestyle</option>
+        <option value="3">200 Freestyle</option>
+        <option value="4">400 Freestyle</option>
+        <option value="5">800 Freestyle</option>
+        <option value="6">1500 Freestyle</option>
+        <option value="7">50 Breaststroke</option>
+        <option value="8">100 Breaststroke</option>
+        <option value="9">200 Breaststroke</option>
+        <option value="10">50 Butterfly</option>
+        <option value="11">100 Butterfly</option>
+        <option value="12">200 Butterfly</option>
+        <option value="13">50 Backstroke</option>
+        <option value="14">100 Backstroke</option>
+        <option value="15">200 Backstroke</option>
+        <option value="16">200 IM</option>
+        <option value="17">400 IM</option>
+        <option value="18">100 IM</option>
+      </select>
+
+      <br>
+
+      <label for="course">Choose a course:</label>
+      <select id="course" name="course" class="inputField">
+        <option value="S">Short Course</option>
+        <option value="L">Long Course</option>
+      </select>
+
+      <br>
+
+      <label for="comp_name"> Competition: </label>
+      <input name="comp_name" id="comp_name" type="text" class="inputField"/>
+
+      <br>
+
+      <label for="date">Date of swim:</label>
+      <input name="date" id="date" type="date" class="inputField">
+
+      <br>
+
+      <label for="final_time">Time Achieved:</label>
+      <input name="final_time" id="final_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}" class="inputField">
+
+
+      <br>
+      <br>
+
+
+      <input type="submit" value="Add Swim" class="formSubmit" />
+
+  </form>
+
+</div>
+
+
+
+
+  <div class="addForms">
+
+
+  <form action="/addGoal" method="POST">
+
+      <h3>Add a Goal Time: </h3>
+
+      <label for="race_ID">Choose an event:</label>
+      <select id="race_ID" name="race_ID" class="inputField">
+        <option value="1">50 Freestyle</option>
+        <option value="2">100 Freestyle</option>
+        <option value="3">200 Freestyle</option>
+        <option value="4">400 Freestyle</option>
+        <option value="5">800 Freestyle</option>
+        <option value="6">1500 Freestyle</option>
+        <option value="7">50 Breaststroke</option>
+        <option value="8">100 Breaststroke</option>
+        <option value="9">200 Breaststroke</option>
+        <option value="10">50 Butterfly</option>
+        <option value="11">100 Butterfly</option>
+        <option value="12">200 Butterfly</option>
+        <option value="13">50 Backstroke</option>
+        <option value="14">100 Backstroke</option>
+        <option value="15">200 Backstroke</option>
+        <option value="16">200 IM</option>
+        <option value="17">400 IM</option>
+        <option value="18">100 IM</option>
+      </select>
+
+      <br>
+
+      <label for="course">Choose a course:</label>
+      <select id="course" name="course" class="inputField">
+        <option value="S">Short Course</option>
+        <option value="L">Long Course</option>
+      </select>
+
+      <br>
+
+      <label for="goal_time"> Goal Time: </label>
+      <input name="goal_time" id="goal_time" type="text" placeholder="mm:ss.hh" pattern="[0-5]?\d:[0-5]\d\.\d{2}" class="inputField">
+
+      <br>
+      <br>
+      <br>
+      
+      <input type="submit" value="Add Goal" class="formSubmit" />
+
+  </form>
+
+  </div>
+  </div>
+</div>
 
 
 
@@ -319,14 +301,28 @@ legend {
 
 
 
-<form>
 
-    <input type="submit" value="Log out" formaction="/logout" formmethod="POST" />
-    <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST" />
-    <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST" />
-    <a href="/dataAnalysis">Data Analysis</a>
 
-</form>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+
+
+
+
+
+
+  <div class="footer">
+  <form>
+
+    <input type="submit" value="Log out" formaction="/logout" formmethod="POST" class="accountM"/>
+    <input type="submit" value="Delete Account" formaction="/deleteAccount" formmethod="POST" class="accountM"/>
+    <input type="submit" value="Refresh data collection" formaction="/refreshData" formmethod="POST" id="refreshData"/>
+
+  </form>
+  </div>
 
 
 </body>

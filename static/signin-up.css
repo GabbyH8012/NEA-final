@@ -1,0 +1,143 @@
+
+@font-face {
+	font-family: "jakarta";
+	src: url(../static/fonts/jakarta.ttf);
+}
+
+
+.formBlock{
+	background-color: white;
+	width: 30vw;
+	border-radius: 20px;
+	box-shadow: 5px 5px 25px rgba(0,0,0,0.2);
+}
+
+
+.header {
+	background-color: #9eb4c1d0;
+	border-radius: 20px;
+	padding: 15px;
+}
+
+
+body {
+	background-color: #9EB4C1;
+	min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+h2 {
+	color: #526F80;
+	text-align: center;
+	font-family: jakarta, sans-serif;
+	font-style: normal;
+	font-variation-settings: "wdth" 90, "wght" 300;
+	font-size: 30px;
+}
+
+
+p {
+	color: #2B3A67;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+
+
+.formContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+
+label {
+	color: #2B3A67;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 13px;
+}
+
+
+input[type=text], input[type=number], input[type=password], input[type=email], select {
+  width: 325px;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #576999dc;
+  border-radius: 10px;
+  background-color: #c7d5dbd0;
+  border-color: #8aa0b65b;
+  color: white;
+}
+
+
+::placeholder {
+	color: #628294;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+.findIDLink {
+	color: #2B3A67;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+	font-size: 13px;
+}
+
+
+.waveLogo {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 150px;
+	margin-top: 15px;
+	margin-bottom: 0;
+	padding: 0px;
+}
+
+
+input[type=submit], select {
+  width: 400px;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #576999dc;
+  border-radius: 50px;
+  background-color: #8AA0B6;
+  border-color: #B7C8D1;
+  color: white;
+  font-size: 25px;
+  font-family: jakarta, Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 300;
+}
+
+
+.or {
+	color: #2B3A67;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+	font-size: 11px;
+}
+
+
+.linkSentence {
+	color: #2B3A67;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+	font-size: 13px;
+}
+
+
+.link {
+	color: #628294;
+}
+
+
+.dataInput {
+	display: block;
+	text-align: center;
+}

@@ -1,0 +1,282 @@
+@font-face {
+	font-family: "signa";
+	src: url(../static/fonts/signa.ttf);
+}
+
+
+@font-face {
+	font-family: "jakarta";
+	src: url(../static/fonts/jakarta.ttf);
+}
+
+
+
+
+
+h2 {
+    font-family: "jakarta","signa", sans-serif;
+    text-align: center;
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+
+h3 {
+    font-family: "jakarta","signa", sans-serif;
+    font-variation-settings: "wdth" 90, "wght" 300;
+    font-size: 20px;
+}
+
+
+h4 {
+    font-family: "jakarta","signa", sans-serif;
+    font-variation-settings: "wdth" 90, "wght" 300;
+    font-size: 18px;
+}
+
+
+.header {
+    background-color: #f8f8f8;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    min-height: 50px;
+}
+
+
+
+body {
+    background-color: #9EB4C1;
+    color: #333;
+    font-family: jakarta, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-variation-settings: "wdth" 90, "wght" 300;
+    font-size: 15px;
+}
+
+
+
+#logoName {
+    display: block;
+    height: 40px;
+    width: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+#name {
+    font-family: "jakarta","signa", sans-serif;
+    font-size: 25px;
+    color: #333;
+    margin: 0;
+    line-height: 1;
+    font-variation-settings: "wdth" 90, "wght" 300;
+}
+
+
+#graph {
+    height: 60px;
+    width: auto;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    margin-right: 25px;
+    transform: translateY(-50%);
+
+}
+
+
+table {
+    font-family: jakarta, arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+
+th,
+td {
+    border: 1px solid black;
+}
+
+
+.tableHeader {
+    background-color: #8aa0b68a;
+    color: white;
+    font-weight: normal;
+    padding: 8px;
+}
+
+
+
+.main {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+    padding: 10px;
+}
+
+#filterForm {
+    flex-shrink: 0;
+    align-self: stretch;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    width: 10%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+}
+
+
+.tables {
+    flex: 1;
+    background-color: #f8f8f8;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.addForms {
+    background-color: #f8f8f8;
+    flex: 1;
+    border-radius: 10px;
+    box-sizing: border-box;
+    margin: 10px;
+    padding: 0 10px 10px 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.addFormsContainer {
+    display: flex;
+    width: 100%;
+}
+
+
+.footer {
+    background-color: #f8f8f8;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+}
+
+
+
+
+#filterSubmit {
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  padding: 5px 0 7px 0;
+  border: 1px solid #576999dc;
+  border-radius: 15px;
+  background-color: #8AA0B6;
+  border-color: #6c7c8b80;
+  color: white;
+  font-size: 15px;
+  font-family: jakarta, Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 300;
+}
+
+
+
+.inputField {
+  width: 750px;
+  padding: 5px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  display: inline-block;
+  background-color: #8aa0b615;
+  border-radius: 5px;
+  border-width: 1px;
+}
+
+
+
+label[for] {
+    display: inline-block;
+    width: 135px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+
+.formSubmit {
+  width: 100%;
+  height: 40px;
+  align-items: center;
+  padding: 3px 0 5px 0;
+  border: 1px solid #576999dc;
+  border-radius: 13px;
+  background-color: #8AA0B6;
+  border-color: #6c7c8b80;
+  color: white;
+  font-size: 15px;
+  font-family: jakarta, Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 300;
+}
+
+
+.accountM {
+  width: 150px;
+  height: 40px;
+  align-items: center;
+  padding: 3px 0 5px 0;
+  border: 1px solid;
+  border-radius: 13px;
+  background-color: rgba(255, 255, 255, 0);
+  border-color: #8AA0B6;
+  color: #8AA0B6;
+  font-size: 15px;
+  font-family: jakarta, Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 400;
+  margin: 5px;
+}
+
+
+#refreshData {
+  margin: 0 0 0 15px;
+  width: 200px;
+  height: 40px;
+  padding: 3px 0 5px 0;
+  box-sizing: border-box;
+  display: inline-block;
+  background-color: #8aa0b63b;
+  border-color: #53555e;
+  border-radius: 13px;
+  border-width: 1px;
+  font-size: 15px;
+  font-family: jakarta, Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 300;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

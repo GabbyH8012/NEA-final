@@ -1,56 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+
+<head class>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swimmer Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='signin-up.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <title>RacePace - Login</title>
 </head>
+
 
 <body>
 
+    <script src="{{ url_for('static', filename='flash.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='flash.min.css') }}">
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-        <hr>
-    {% endif %}
-{% endwith %}
+    
+
+    <script>
+        const messages = {{ get_flashed_messages() | tojson }};
+        if (messages.length > 0) {
+        window.FlashMessage.info(messages, {
+            timeout: 3000,
+            progress: true,
+            interactive: true,
+        });
+        }
+    </script>
 
 
-<div>
-    <h1><i> 'App Name' </i></h1>
-</div>
 
-<div>
-    <h2>Swimmer Login</h2>
-</div>
 
-<div>
-    <form action="/login" method="POST">
+    <div class="formBlock">
 
-         <div>
-            <label for="rankings_ID"> Swim England ID: </label>
-            <input name="rankings_ID" id="rankings_ID" type="number" required min="100" and max="9999999999"/>
-            <p> Don't know your Swim England ID? <a href="https://www.swimming.org/swimengland/club-member-check/">Find out here</a></p>
+        <div class="waveLogo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Race Pace">
         </div>
+
 
         <div>
-            <label for="password">Password: </label>
-            <input name="password" id="password" type="password" required minlength="9" />
+            <h2>Login</h2>
         </div>
 
-        <div>
-            <input type="submit" value="Login" />
-        </div>
-        
-    </form>
-</div>
+        <div class="formContainer">
+            <form action="/login" method="POST">
 
-<p> or </p>
-<p> Don't have an account? <a href="/createAccount">Sign up</a></p>
+                <div class="dataInput">
+                    <input name="rankings_ID" id="rankings_ID" type="number" placeholder="ⵌ Swim England ID" required
+                        min="100" max="9999999999" />
+                </div>
+
+                <div class="dataInput">
+                    <input name="password" id="password" type="password" placeholder="🔒︎ Password" required
+                        minlength="9" />
+                </div>
+
+                <br>
+
+                <div>
+                    <input type="submit" value="Sign In" />
+                </div>
+
+            </form>
+        </div>
+
+
+        <p class="or">━━━━━━━━━━━━━ &nbsp; or &nbsp; ━━━━━━━━━━━━</p>
+        <p class="linkSentence"> Don't have an account? <a href="/createAccount" class="link">Sign up</a></p>
+        <p class="findIDLink"> Don't know your Swim England ID? <a
+                href="https://www.swimming.org/swimengland/club-member-check/" class="link">Find out here</a></p>
+        <p> 𓆝 𓆟 𓆞 𓆝 𓆟 𓆞 </p>
+
+    </div>
 
 </body>
+
 </html>

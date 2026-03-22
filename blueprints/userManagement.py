@@ -36,9 +36,8 @@ def login():
         elif check_login_credentials(rankings_ID, password) == True:
             
             session["currentSwimmer_ID"] = rankings_ID
-            currentSwimmer_name = get_user_info(rankings_ID)[0]
-            currentSwimmer_email = get_user_info(rankings_ID)[1]
-            
+            session["currentSwimmer_name"] = get_user_info(rankings_ID)[0]
+            session["currentSwimmer_email"] = get_user_info(rankings_ID)[1]
 
 
             #fetching data from the rankings website and pushing it to the database
@@ -51,7 +50,7 @@ def login():
 
             #finding PBs for the swimmer and rendering the home page with this data
             short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+            return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
         
 
     # or assuming first-time form visit - load login form
@@ -176,7 +175,7 @@ def createAccount():
 
 
                 short_PBs, long_PBs = find_PBs(session["currentSwimmer_ID"])
-                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+                return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
             else:
                 flash("Sign-up failed - please try again")
                 return render_template("createAccount.html")
@@ -224,7 +223,7 @@ def refreshData():
     flash("Data refresh complete")
 
     short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
 
 
@@ -233,7 +232,7 @@ def refreshData():
 @userManagement_bp.route("/home", methods=['GET', 'POST'])
 def home():
     short_PBs, long_PBs = find_PBs(session['currentSwimmer_ID'])
-    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None)
+    return render_template("home.html", short_PBs=short_PBs, long_PBs=long_PBs, selectedRaceNames=None, selectedCourses=None, name=session['currentSwimmer_name'])
 
 
 

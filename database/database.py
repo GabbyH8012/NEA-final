@@ -148,7 +148,9 @@ def get_user_info(rankings_ID: int):
                         WHERE rankings_ID = ? """ , (str(rankings_ID),))
         result = cursor.fetchone()
 
+        print(result)
         return result
+
     
 
 

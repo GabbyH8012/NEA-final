@@ -4,70 +4,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Swimmer Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='signin-up.css') }}">
+    <title>RacePace - Create Account</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
 </head>
+
 
 <body>
 
-
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-        <hr>
-    {% endif %}
-{% endwith %}
+    <script src="{{ url_for('static', filename='flash.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='flash.min.css') }}">
 
 
+    <script>
+        const messages = {{ get_flashed_messages() | tojson }};
+        if (messages.length > 0) {
+        window.FlashMessage.info(messages, {
+            timeout: 3000,
+            progress: true,
+            interactive: true,
+        });
+        }
+    </script>
 
-<div>
-    <h1><i> 'App Name' </i></h1>
-</div>
-
-<div>
-    <h2> Create Swimmer Account</h2>
-</div>
 
 
-<div>
-    <form action="/createAccount" method="POST">
-        <div>
-            <label for="rankings_ID"> Swim England ID: </label>
-            <input name="rankings_ID" id="rankings_ID" type="number" required min="1000" and max="9999999999"/>
-            <p> Don't know your Swim England ID? <a href="https://www.swimming.org/swimengland/club-member-check/">Find out here</a></p>
-        </div>
+
+    <div class="formBlock">
+
 
         <div>
-            <label for="name">Name: </label>
-            <input name="name" id="name" type="text"/>
+            
+            <div class="waveLogo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Race Pace">
+            </div>
+
+
+            <h2> Create Account </h2>
         </div>
 
-        <div>
-            <label for="email">Email: </label>
-            <input name="email" id="email" type="email"/>
+
+        <div class="formContainer">
+
+            <form action="/createAccount" method="POST">
+        
+                <div class="dataInput">
+                    <input name="rankings_ID" id="rankings_ID" type="number" placeholder="ⵌ Swim England ID" required min="1000" max="9999999999" />
+                </div>
+
+                <div class="dataInput">
+                    <input name="name" id="name" type="text" placeholder="옷 Name" />
+                </div>
+
+                <div class="dataInput">
+                    <input name="email" id="email" type="email" placeholder="✉ Email" />
+                </div>
+
+                <div class="dataInput">
+                    <input name="password" id="password" type="password" placeholder="🔒︎ Password" required
+                        minlength="9" />
+                </div>
+
+                <div class="dataInput">
+                    <input name="repassword" id="repassword" type="password" placeholder="🔒︎ Re-enter password"
+                        required minlength="9" />
+                </div>
+
+                <br>
+
+                <div class="dataInput">
+                    <input type="submit" value="Sign-up" />
+                </div>
+            </form>
         </div>
 
-        <div>
-            <label for="password">Password: </label>
-            <input name="password" id="password" type="password" required minlength="9" />
-        </div>
+        <p class="or">━━━━━━━━━━━━━ &nbsp; or &nbsp; ━━━━━━━━━━━━</p>
+        <p class="linkSentence"> Already have an account? <a href="/login" class="link">Sign in</a></p>
+        <p class="findIDLink"> Don't know your Swim England ID? <a href="https://www.swimming.org/swimengland/club-member-check/" class="link">Find out here</a></p>
+        <p> 𓆝 𓆟 𓆞 𓆝 𓆟 𓆞 </p>
 
-        <div>
-            <label for="repassword">Re-enter password: </label>
-            <input name="repassword" id="repassword" type="password" required minlength="9" />
-        </div>
-
-        <div>
-            <input type="submit" value="Sign-up" />
-        </div>
-    </form>
-</div>
-
-<p> or </p>
-<p> Already have an account? <a href="/login">Sign in</a></p>
-
-
+    </div>
 
 
 
