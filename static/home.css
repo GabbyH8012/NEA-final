@@ -90,7 +90,6 @@ body {
     top: 50%;
     margin-right: 25px;
     transform: translateY(-50%);
-
 }
 
 
@@ -263,6 +262,10 @@ label[for] {
 
 
 
+input[type=submit]:hover {
+  background-color: #395670be;
+  cursor: pointer;
+}
 
 
 

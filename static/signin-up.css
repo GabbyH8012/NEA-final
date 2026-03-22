@@ -141,3 +141,9 @@ input[type=submit], select {
 	display: block;
 	text-align: center;
 }
+
+
+input[type=submit]:hover {
+  background-color: #395670be;
+  cursor: pointer;
+}

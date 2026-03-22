@@ -4,10 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Analysis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dataAnalysis.css') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <title>RacePace - Data Analysis</title>
 </head>
 
+
+
 <body>
+
+  <div class="header">
+    <p id="pageName">Data Analysis</p>
+    <img src="{{ url_for('static', filename='images/logoName.png') }}" id="logoName" alt="Race Pace">
+    <a href="/home"><img src="{{ url_for('static', filename='images/table.png') }}" alt="Data Analysis" id="graph"></a>
+  </div>
+
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
@@ -26,9 +37,18 @@
     var course_scatter = {{ course_scatter | tojson }};
   </script>
 
+  <br>
 
-  <canvas id="shortCourseGoalProgressTracker" style="width:100%;max-width:1000px"></canvas>
-  <canvas id="longCourseGoalProgressTracker" style="width:100%;max-width:1000px"></canvas>
+
+  <p class="graphDescription"> The two bar charts below display the time you have to drop per length to achieve your goal for each event:</p>
+  <div class="barCharts">
+    <canvas id="shortCourseGoalProgressTracker"></canvas>
+    <canvas id="longCourseGoalProgressTracker"></canvas>
+  </div>
+
+  
+
+
 
   <div id="goalProgressTrackerBarCharts">
     <script>
@@ -64,14 +84,6 @@
         },
       }
       );
-
-
-      // if (shortDropPerLengthBar.length === 0) {
-      //   document.body.insertAdjacentHTML(
-      //     "beforeend",
-      //     "<p>No valid drop-per-length values found yet.</p>"
-      //   );
-      // }
 
 
 
@@ -117,16 +129,19 @@
 
 
 
+  <script>
+    document.write("<h3 class='lineGraphDescription'>Event Progression for: " + raceName_line + " (" + course_line + ")</h3>");
+  </script>
 
+<div class="lineContainer">
 
-
-  <div>
+  <div class="filterForm">
     <form action="/chooseDisplayedEvent_Line" method="POST">
-      <fieldset>
-        <legend>Change event displayed below: </legend>
+      <h3>Change Event:</h3>
+      <br>
 
-        <label for="race_ID">Choose an event:</label>
-        <select id="race_ID" name="race_ID">
+        <label for="race_ID">Choose a race:</label>
+        <select id="race_ID" name="race_ID" class="inputField">
           <option value="1">50 Freestyle</option>
           <option value="2">100 Freestyle</option>
           <option value="3">200 Freestyle</option>
@@ -147,36 +162,28 @@
           <option value="18">100 IM</option>
         </select>
 
-        <br>
+        <br><br><br>
 
         <label for="course">Choose a course:</label>
-        <select id="course" name="course">
+        <select id="course" name="course" class="inputField">
           <option value="S">Short Course</option>
           <option value="L">Long Course</option>
         </select>
 
-        <br>
+        <br><br><br>
 
-        <input type="submit" value="Change Event" />
+        <input type="submit" value="Change Event" class="formSubmit"/>
 
-      </fieldset>
     </form>
+    <br><br><br><br><br>
+
+    <p>The line graph to the right shows every result you have achieved in the selected event.</p>
+    <p> Blue dots represent a PB, and the green dot is your goal time.</p>
+
   </div>
 
-
-
-  <br><br>
-
-
-
-
-  <script>
-    document.write("<h3>Event Progression for: " + raceName_line + " (" + course_line + ")</h3>");
-  </script>
-
-  <canvas id="shortCourseEventProgression" style="width:100%;max-width:1000px"></canvas>
-
   <div id="eventProgressionLineGraphs">
+    <canvas id="shortCourseEventProgression"></canvas>
     <script>
 
       const resultsLine = [];
@@ -250,7 +257,7 @@
             fill: false,
             borderColor: pointColours.map(colour => `rgba(${colour[0]}, ${colour[1]}, ${colour[2]}, 0.5)`),
             borderWidth: 1,
-            tension: 0.2,
+            tension: 0.15,
             pointRadius: 3.5,
           }, {
             label: "Goal",
@@ -276,6 +283,7 @@
 
     </script>
   </div>
+  </div>
 
   <br><br><br><br>
 
@@ -285,17 +293,20 @@
 
 
 
+<script>
+    document.write("<h3 class='lineGraphDescription'>Event Progression for: " + raceName_scatter + " (" + course_scatter + ")</h3>");
+  </script>
 
 
-
-
-  <div>
+<div class="scatterContainer">
+  <div class="filterForm">
     <form action="/chooseDisplayedEvent_Scatter" method="POST">
-      <fieldset>
-        <legend>Change event displayed below: </legend>
 
+      <h3>Change Event:</h3>
+      <br><br>
+      
         <label for="Scatter_race_ID">Choose an event:</label>
-        <select id="Scatter_race_ID" name="Scatter_race_ID">
+        <select id="Scatter_race_ID" name="Scatter_race_ID" class="inputField">
           <option value="1">50 Freestyle</option>
           <option value="2">100 Freestyle</option>
           <option value="3">200 Freestyle</option>
@@ -316,34 +327,34 @@
           <option value="18">100 IM</option>
         </select>
 
-        <br>
+        <br><br><br>
 
         <label for="Scatter_course">Choose a course:</label>
-        <select id="Scatter_course" name="Scatter_course">
+        <select id="Scatter_course" name="Scatter_course" class="inputField">
           <option value="S">Short Course</option>
           <option value="L">Long Course</option>
         </select>
 
-        <br>
+        <br><br><br>
 
-        <input type="submit" value="Change Event" />
+        <input type="submit" value="Change Event" id="filterSubmit"/>
 
-      </fieldset>
     </form>
-</div>
+    <br><br><br><br><br>
+
+    <p>The scatter graph to the right shows your progression for the selected event over time.</p>
+    <p> The green threshold line represents your goal time.</p>
+
+  </div>
 
 
 
 
   <br><br>
 
-  <script>
-    document.write("<h3>Event Progression for: " + raceName_scatter + " (" + course_scatter + ")</h3>");
-  </script>
 
 
-
-  <canvas id="goalPredictionScatter" style="width:100%;max-width:1000px"></canvas>
+  <canvas id="goalPredictionScatter"></canvas>
 
   <div id="scatterGraphs">
     <script>
@@ -425,14 +436,7 @@
 
     </script>
   </div>
-
-
-
-
-
-
-  <a href="/home">Home</a>
-
+</div>
 
 
 </body>
